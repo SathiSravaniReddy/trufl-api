@@ -1,0 +1,24 @@
+==================================================================
+Date and Time: 10/27/2017 6:17:04 PM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Object reference not set to an instance of an object.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.SaveDefineSections(List`1 restaurantDefineSections) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 2262
+File PAth:
+
+
+==================================================================
+Date and Time: 10/27/2017 6:18:07 PM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Object reference not set to an instance of an object.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.SaveDefineSections(List`1 restaurantDefineSections) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 2262
+File PAth:
+
+
+==================================================================
+Date and Time: 10/27/2017 6:18:18 PM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Object reference not set to an instance of an object.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.SaveDefineSections(List`1 restaurantDefineSections) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 2262
+File PAth:
+
+

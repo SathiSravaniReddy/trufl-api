@@ -1,0 +1,16 @@
+==================================================================
+Date and Time: 10/30/2017 4:17:01 PM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Index was outside the bounds of the array.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.GetRestaurantSectionTables(Int32 RestaurantID) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 1724
+File PAth:
+
+
+==================================================================
+Date and Time: 10/30/2017 4:18:51 PM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Index was outside the bounds of the array.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.GetRestaurantSectionTables(Int32 RestaurantID) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 1724
+File PAth:
+
+

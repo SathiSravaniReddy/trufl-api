@@ -1,0 +1,25 @@
+==================================================================
+Date and Time: 10/5/2017 10:35:21 AM
+ERROR OCCOURED IN:.Net SqlClient Data Provider
+ERROR MESSAGE:The procedure "spSaveRestaurantOpenSectionStaff" has no parameter named "@RestaurantActiveSectionsTY".
+ERROR DESCRPTION:   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, String methodName, Boolean sendToPipe, Int32 timeout, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at Trufl.Data_Access_Layer.HostessDL.SaveRestaurantOpenSectionStaff(RestaurantSectionStaffDTO restaurantSectionStaff) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 1173
+File PAth:
+
+
+==================================================================
+Date and Time: 10/5/2017 10:51:59 AM
+ERROR OCCOURED IN:Trufl.Data Access Layer
+ERROR MESSAGE:Object reference not set to an instance of an object.
+ERROR DESCRPTION:   at Trufl.Data_Access_Layer.HostessDL.SaveRestaurantOpenSectionStaff(List`1 restaurantSectionStaff) in D:\Trufl-Dev\Trufl.Data Access Layer\HostessDL.cs:line 1158
+File PAth:
+
+
