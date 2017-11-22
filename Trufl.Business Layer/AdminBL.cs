@@ -11,11 +11,17 @@ namespace Trufl.Business_Layer
     public class AdminBL
     {
         AdminDL _adminDL = new AdminDL();
-        #region Trufl_Admin
+
+        #region AdminDashBoardController
+        
         public DashBoardDetailsDTO GetDashBoardDetails(DashBoardDTO dashboardInput)
         {
             return _adminDL.GetDashBoardDetails(dashboardInput);
         }
+
+        #endregion
+
+        #region AdminNotificationsController
 
         public DataTable GetNotifications(int RestaurantID)
         {
@@ -27,26 +33,20 @@ namespace Trufl.Business_Layer
             return _adminDL.SaveNotifications(notifications);
         }
 
+        #endregion
+
+        #region AdminRestaurantController
+
         public bool SaveRestaurant(SaveRestaurantDTO restaurant)
         {
             return _adminDL.SaveRestaurant(restaurant);
         }
 
-        public SettingsDTO GetRestaurantUserDetails(int? RestaurantID, int TruflUserID, string UserType)
-        {
-            return _adminDL.GetRestaurantUserDetails(RestaurantID,TruflUserID,UserType);
-        }
         public DataTable GetAllRestaurants()
         {
             return _adminDL.GetAllRestaurants();
         }
-
-        public bool SaveProfilePassword(RestPasswordDTO ProfilePassword)
-        {
-            return _adminDL.SaveProfilePassword(ProfilePassword);
-        }
-        #endregion
-
+        
         public bool SaveRestaurantSettings(RestaurantSettingsDTO RestaurantSettings)
         {
             return _adminDL.SaveRestaurantSettings(RestaurantSettings);
@@ -56,5 +56,17 @@ namespace Trufl.Business_Layer
         {
             return _adminDL.GetRestaurantSettings(RestaurantID);
         }
+
+        #endregion
+
+        #region TruflAdminLoginController
+
+        public bool SaveProfilePassword(RestPasswordDTO ProfilePassword)
+        {
+            return _adminDL.SaveProfilePassword(ProfilePassword);
+        }
+
+        #endregion
+
     }
 }

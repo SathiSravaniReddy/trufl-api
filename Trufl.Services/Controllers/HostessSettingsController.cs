@@ -43,7 +43,7 @@ namespace Trufl.Services.Controllers
 
         [Route("GetEmployeConfiguration/{TruflUserType}/{RestaurantID}")]
         [HttpGet]
-        public object spGetEmployeConfigration(string TruflUserType, int RestaurantID)
+        public object GetEmployeConfigration(string TruflUserType, int RestaurantID)
         {
             DataTable res = new DataTable();
             try

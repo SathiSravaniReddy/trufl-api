@@ -43,10 +43,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Trufl.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Trufl.Logging\bin\Debug\Trufl.Logging.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdminDL.cs" />
@@ -89,6 +85,10 @@
     <ProjectReference Include="..\DTO\DTO.csproj">
       <Project>{33bf1bb2-d982-4f64-9e16-47e730bdc10e}</Project>
       <Name>DTO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Trufl.Logging\Trufl.Logging.csproj">
+      <Project>{2a68113e-3a04-4e48-88ec-2ebcacae7368}</Project>
+      <Name>Trufl.Logging</Name>
     </ProjectReference>
     <ProjectReference Include="..\TruflEmailService\TruflEmailService.csproj">
       <Project>{ade0984d-f4ca-474b-a324-6a006c9fc87b}</Project>

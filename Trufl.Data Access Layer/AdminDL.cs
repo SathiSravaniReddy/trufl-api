@@ -18,7 +18,7 @@ namespace Trufl.Data_Access_Layer
         string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
         #endregion
 
-        #region Trufl_Admin
+        #region AdminDashBoardController
 
         public DashBoardDetailsDTO GetDashBoardDetails(DashBoardDTO dashboardInput)
         {
@@ -74,6 +74,10 @@ namespace Trufl.Data_Access_Layer
             return response;
         }
 
+        #endregion
+
+        #region AdminNotificationsController
+
         /// <summary>
         /// This method 'GetNotifications ' returns Notifications details
         /// </summary>
@@ -109,8 +113,7 @@ namespace Trufl.Data_Access_Layer
             }
             return sendResponse;
         }
-
-
+        
         /// <summary>
         /// This method 'SaveNotifications' will save Notifcation data
         /// </summary>
@@ -163,6 +166,9 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+        #endregion
+
+        #region AdminRestaurantController
 
         /// This method 'spSaveRestaurant' will save Restaurant data
         /// </summary>
@@ -172,7 +178,6 @@ namespace Trufl.Data_Access_Layer
         {
             try
             {
-
                 var dtClient = new DataTable();
 
                 dtClient.Columns.Add("RestaurantID", typeof(Int32));
@@ -200,7 +205,6 @@ namespace Trufl.Data_Access_Layer
                 dtClient.Columns.Add("NumberOfTables", typeof(Int32));
                 dtClient.Columns.Add("MenuPath", typeof(Int32));
 
-
                 dtClient.Rows.Add(restaurant.RestaurantID,
                                   restaurant.RestaurantName,
                                   restaurant.Description,
@@ -226,8 +230,6 @@ namespace Trufl.Data_Access_Layer
                                   restaurant.NumberOfTables,
                                   restaurant.MenuPath
                                    );
-
-
 
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
@@ -261,72 +263,11 @@ namespace Trufl.Data_Access_Layer
             }
             catch (Exception ex)
             {
-                //string s = ex.ToString();
-                ExceptionLogger.WriteToErrorLogFile(ex);
-                throw ex;
-                //return false;
-            }
-        }
-
-        /// <summary>
-        /// This method 'GetRestaurantUserDetails ' returns Restaurant User details
-        /// </summary>
-        /// <returns>Notifications List</returns>
-        public SettingsDTO GetRestaurantUserDetails(int? RestaurantID,int TruflUserID,string UserType)
-        {
-            SettingsDTO sendResponse = new SettingsDTO();
-            try
-            {
-                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
-                using (SqlConnection sqlcon = new SqlConnection(connectionString))
-                {
-                    using (SqlCommand cmd = new SqlCommand("spGetRestaurantUserDetails", sqlcon))
-                    {
-                        cmd.CommandTimeout = TruflConstants.DBResponseTime;
-                        cmd.CommandType = CommandType.StoredProcedure;
-
-                        
-                        if (RestaurantID == null)
-                        {
-                            SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", DBNull.Value);
-                        }
-                        else
-                        {
-                            SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
-                            tvpParam.SqlDbType = SqlDbType.Int;
-                        }
-                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
-                        tvparam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@UserType", UserType);
-                        tvparam2.SqlDbType = SqlDbType.Char;
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            DataSet ds = new DataSet();
-                            da.Fill(ds);
-
-                            sendResponse.UserLoginInformation = ds.Tables[0];
-                            sendResponse.UsersInformation = ds.Tables[1];
-                            sendResponse.RegisteredRestaurants = ds.Tables[2];
-                            sendResponse.RestaurantUserDetailswithHistory = ds.Tables[3];
-                            //sendResponse.BookingHistory = ds.Tables[3];
-                            sendResponse.UserProfielFullName = ds.Tables[4];
-                            sendResponse.BioData = ds.Tables[5];
-                            sendResponse.BookingHistory = ds.Tables[6];
-                        }
-                    }
-                }
-                // }
-            }
-            catch (Exception ex)
-            {
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
-            return sendResponse;
         }
-
-
+        
         /// <summary>
         /// This method 'GetAllRestaurants ' returns AllRestaurants details
         /// </summary>
@@ -349,7 +290,6 @@ namespace Trufl.Data_Access_Layer
                         }
                     }
                 }
-                // }
             }
             catch (Exception ex)
             {
@@ -360,59 +300,14 @@ namespace Trufl.Data_Access_Layer
         }
 
         /// <summary>
-        /// This method 'SaveProfilePassword' will Save Profile Password 
+        /// Saves the Restaurant Settings to the DB
         /// </summary>
-        /// <param name=" data"></param>
-        /// <returns>Returns SaveProfilePassword  </returns>
-        public bool SaveProfilePassword(RestPasswordDTO restPasswordInput)
-        {
-            DataTable sendResponse = new DataTable();
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand("SaveProfilePassword", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@UserID", restPasswordInput.UserID);
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@UserName", restPasswordInput.UserName);
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@UserEmail", restPasswordInput.UserEmail);
-                        tvpParam2.SqlDbType = SqlDbType.Text;
-                        //SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@LoginPassword", DBNull.Value);
-              
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@NewLoginPassword", restPasswordInput.NewLoginPassword);
-                        tvpParam4.SqlDbType = SqlDbType.Text;
-
-                        int status = cmd.ExecuteNonQuery();
-
-                        if (status == -1)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //string s = ex.ToString();
-                ExceptionLogger.WriteToErrorLogFile(ex);
-                throw ex;
-                //return false;
-            }
-        }
-
-        #endregion
-
+        /// <param name="RestaurantSettings">Class object with the values for restaurant Settings</param>
+        /// <returns>returns 1 on saving the password , or 0 on error</returns>
         public bool SaveRestaurantSettings(RestaurantSettingsDTO RestaurantSettings)
         {
             try
             {
-
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
@@ -453,14 +348,16 @@ namespace Trufl.Data_Access_Layer
             }
             catch (Exception ex)
             {
-                //string s = ex.ToString();
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
-                //return false;
             }
         }
 
-
+        /// <summary>
+        /// get the restaurant Settings details for edit
+        /// </summary>
+        /// <param name="RestaurantID">Restaurant ID as Input</param>
+        /// <returns>returns a DataTable with the Restaurant settings details</returns>
         public DataTable GetRestaurantSettings(int RestaurantID)
         {
             DataTable dtsendResponse = new DataTable();
@@ -484,7 +381,6 @@ namespace Trufl.Data_Access_Layer
                         }
                     }
                 }
-                // }
             }
             catch (Exception ex)
             {
@@ -494,5 +390,59 @@ namespace Trufl.Data_Access_Layer
             return dtsendResponse;
         }
 
+        #endregion
+
+        #region TruflAdminLoginController
+
+       /// <summary>
+        /// This method 'SaveProfilePassword' will Save Profile Password 
+        /// </summary>
+        /// <param name="restPasswordInput"></param>
+        /// <returns>returns 1 on saving the password , or 0 on error</returns>
+        public bool SaveProfilePassword(RestPasswordDTO restPasswordInput)
+        {
+            DataTable sendResponse = new DataTable();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("SaveProfilePassword", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@UserID", restPasswordInput.UserID);
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@UserName", restPasswordInput.UserName);
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@UserEmail", restPasswordInput.UserEmail);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
+                        //SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@LoginPassword", DBNull.Value);
+
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@NewLoginPassword", restPasswordInput.NewLoginPassword);
+                        tvpParam4.SqlDbType = SqlDbType.Text;
+
+                        int status = cmd.ExecuteNonQuery();
+
+                        if (status == -1)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //string s = ex.ToString();
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+                //return false;
+            }
+        }
+
+        #endregion
+
+       
     }
 }

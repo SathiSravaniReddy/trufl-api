@@ -72,6 +72,10 @@
       <Project>{2a7d8377-14db-4cff-97be-bfae852b89ae}</Project>
       <Name>Trufl.Data Access Layer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TruflEmailService\TruflEmailService.csproj">
+      <Project>{ade0984d-f4ca-474b-a324-6a006c9fc87b}</Project>
+      <Name>TruflEmailService</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

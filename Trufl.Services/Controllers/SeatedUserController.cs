@@ -26,6 +26,7 @@ namespace Trufl.Services.Controllers
         JsonResponseResult JsonResponseResult = new JsonResponseResult();
 
         #region Seated User
+
         [Route("GetSeatedUsersList/{RestaurantID}")]
         [HttpGet]
         public object GetRestaurantSeatedUsers(int RestaurantID)
@@ -56,7 +57,6 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
-        #endregion
 
         [Route("UpdateExtraTime/{BookingID}/{AddTime}")]
         [HttpPost]
@@ -87,5 +87,22 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
+
+        [Route("UpdateEmptyBookingStatus/{BookingID}")]
+        [HttpPost]
+        public object UpdateEmptyBookingStatus(int BookingID)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateEmptyBookingStatus(BookingID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        #endregion
     }
 }

@@ -13,66 +13,41 @@ namespace Trufl.Business_Layer
     {
 
         HostessDL _hostessDL = new HostessDL();
-        #region Trufl_Hostess
-        
-        #region WaitList
-        public List<UserProfile> RetrieveUser()
-        {
-            return _hostessDL.RetrieveUser();
-        }
 
-        public DataTable GetWaitListUsers(int RestaurantID)
-        {
-            return _hostessDL.GetWaitListUsers(RestaurantID);
-        }
+        #region SeatedUserController
 
-        public DataTable AcceptedWaitedUser(int BookingID, int BookinStatus)
-        {
-            return _hostessDL.AcceptedWaitedUser(BookingID, BookinStatus);
-        }
-
-        public DataTable GetRestaurantTables(int RestaurantID, int UserID)
-        {
-            return _hostessDL.GetRestaurantTables(RestaurantID, UserID);
-        }
-
-        public bool SaveWaitedlistBooking(BookingTableDTO bookingTableInput)
-        {
-            return _hostessDL.SaveWaitedlistBooking(bookingTableInput);
-        }
-
-        public DataTable GetRestaurantTableAmount(int RestaurantID, int TableNumber)
-        {
-            return _hostessDL.GetRestaurantTableAmount(RestaurantID, TableNumber);
-        }
-
-        public bool UpdateBooking(UpdateBookingTableNumberDTO updateBookingTableNumber)
-        {
-            return _hostessDL.UpdateBooking(updateBookingTableNumber);
-        }
-
-        public bool UpdateRestaurantHostStatus(UpdateRestaurantHostStatusDTO UpdateRestaurantHost)
-        {
-            return _hostessDL.UpdateRestaurantHostStatus(UpdateRestaurantHost);
-        }
-            #endregion
-
-            #region Seated User
-            public DataTable GetRestaurantSeatedUsers(int RestaurantID)
+        public DataTable GetRestaurantSeatedUsers(int RestaurantID)
         {
             return _hostessDL.GetRestaurantSeatedUsers(RestaurantID);
         }
 
-         public bool SaveSeatBooking(List<RestaurantSeatedUsersDTO> restaurantSeatedUsersInputDTO)
+        public bool SaveSeatBooking(List<RestaurantSeatedUsersDTO> restaurantSeatedUsersInputDTO)
         {
             return _hostessDL.SaveSeatBooking(restaurantSeatedUsersInputDTO);
         }
+
+        public bool UpdateExtraTime(int BookingID, int AddTime)
+        {
+            return _hostessDL.UpdateExtraTime(BookingID, AddTime);
+        }
+
+        public bool UpdateCheckReceived(int BookingID)
+        {
+            return _hostessDL.UpdateCheckReceived(BookingID);
+        }
+
+        public bool UpdateEmptyBookingStatus(int BookingID)
+        {
+            return _hostessDL.UpdateEmptyBookingStatus(BookingID);
+        }
+
         #endregion
 
-        #region LoginUser
-        public DataTable GetUserTypes(string UserType,int RestaurantID)
+        #region LoginController
+
+        public DataTable GetUserTypes(string UserType, int RestaurantID)
         {
-            return _hostessDL.GetUserTypes(UserType,RestaurantID);
+            return _hostessDL.GetUserTypes(UserType, RestaurantID);
         }
 
         public bool SaveSignUpUserInfo(TruflUserDTO registerUserInfo)
@@ -99,11 +74,16 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.GetTruflUserDetails(TruflUserID);
         }
+
         public DataTable GetRestaurantDetails(int RestaurantID)
         {
             return _hostessDL.GetRestaurantDetails(RestaurantID);
         }
+
         #endregion
+
+        #region HostessSettingsController
+
         public bool SaveUserBioEvents(SaveUserBioEventsDTO saveUserBioEvents)
         {
             return _hostessDL.SaveUserBioEvents(saveUserBioEvents);
@@ -124,11 +104,124 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetEmployeConfiguration(TruflUserType, RestaurantID);
         }
 
-        public bool spUpdateRestaurantEmployee(EmployeeConfigDTO employeeConfigDTO)
-        {
-            return _hostessDL.spUpdateRestaurantEmployee(employeeConfigDTO);
-        }
         #endregion
+
+        #region HostessRestaurantEmployeeController
+
+        public SettingsDTO GetRestaurantUserDetails(int? RestaurantID, int TruflUserID, string UserType)
+        {
+            return _hostessDL.GetRestaurantUserDetails(RestaurantID, TruflUserID, UserType);
+        }
+
+        public bool UpdateRestaurantHostStatus(UpdateRestaurantHostStatusDTO UpdateRestaurantHost)
+        {
+            return _hostessDL.UpdateRestaurantHostStatus(UpdateRestaurantHost);
+        }
+
+        public bool UpdateRestaurantEmployee(EmployeeConfigDTO employeeConfigDTO)
+        {
+            return _hostessDL.UpdateRestaurantEmployee(employeeConfigDTO);
+        }
+
+        public DataTable GetRestaurantTables(int RestaurantID, int UserID)
+        {
+            return _hostessDL.GetRestaurantTables(RestaurantID, UserID);
+        }
+
+        public DataSet GetRestaurantGuest(int RestaurantID, int UserId, string UserType)
+        {
+            return _hostessDL.GetRestaurantGuest(RestaurantID, UserId, UserType);
+        }
+
+        public bool SaveRestaurantGuest(SaveRestaurantGuestDTO SaveRestaurantGuest)
+        {
+            return _hostessDL.SaveRestaurantGuest(SaveRestaurantGuest);
+        }
+
+        public bool UpdateRestaurantGuest(UpdateRestaurantGuestDTO UpdateRestaurantGuest)
+        {
+            return _hostessDL.UpdateRestaurantGuest(UpdateRestaurantGuest);
+        }
+
+        public bool SaveRestaurantGuestImmediately(SaveRestaurantGuestDTO SaveRestaurantGuest)
+        {
+            return _hostessDL.SaveRestaurantGuestImmediately(SaveRestaurantGuest);
+        }
+
+        public bool UpdateRestaurantGuestImmediately(UpdateRestaurantGuestDTO UpdateRestaurantGuest)
+        {
+            return _hostessDL.UpdateRestaurantGuestImmediately(UpdateRestaurantGuest);
+        }
+
+        #endregion
+
+        #region HostessWaitListUserController
+
+        #region WaitList
+
+        public List<UserProfile> RetrieveUser()
+        {
+            return _hostessDL.RetrieveUser();
+        }
+
+        public DataTable GetWaitListUsers(int RestaurantID)
+        {
+            return _hostessDL.GetWaitListUsers(RestaurantID);
+        }
+
+        public DataTable AcceptedWaitedUser(int BookingID, int BookinStatus)
+        {
+            return _hostessDL.AcceptedWaitedUser(BookingID, BookinStatus);
+        }
+
+        public bool SaveWaitedlistBooking(BookingTableDTO bookingTableInput)
+        {
+            return _hostessDL.SaveWaitedlistBooking(bookingTableInput);
+        }
+
+        public DataTable GetRestaurantTableAmount(int RestaurantID, int TableNumber)
+        {
+            return _hostessDL.GetRestaurantTableAmount(RestaurantID, TableNumber);
+        }
+
+        public bool UpdateBooking(UpdateBookingTableNumberDTO updateBookingTableNumber)
+        {
+            return _hostessDL.UpdateBooking(updateBookingTableNumber);
+        }
+
+        public DataTable GetSeatAGuest(int RestaurantID)
+        {
+            return _hostessDL.GetSeatAGuest(RestaurantID);
+        }
+
+        public DataSet GetRestaurantGetSeatedNow(int RestaurantID)
+        {
+            return _hostessDL.GetRestaurantGetSeatedNow(RestaurantID);
+        }
+
+        public bool SaveRestaurantGetSeatedNow(SaveGetSeatedNow saveGetSeatedNow)
+        {
+            return _hostessDL.SaveRestaurantGetSeatedNow(saveGetSeatedNow);
+        }
+
+        public bool UpdateWaitListAccept(int BookingID, string TableNumbers)
+        {
+            return _hostessDL.UpdateWaitListAccept(BookingID, TableNumbers);
+        }
+
+        public DataTable SendPushNotification(int TruflUserID)
+        {
+            return _hostessDL.SendPushNotification(TruflUserID);
+        }
+
+        public string SendPushNotification(PushNotification pushNotification)
+        {
+            return _hostessDL.SendPushNotification(pushNotification);
+        }
+
+        #endregion
+
+        #region StartService
 
         public DataTable GetRestaurantOpenSections(int RestaurantID)
         {
@@ -160,34 +253,38 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetRestaurantHostessOpenSectionDetails(RestaurantID, UserType);
         }
 
-        public DataSet GetRestaurantGuest(int RestaurantID, int UserId, string UserType)
-        {
-            return _hostessDL.GetRestaurantGuest(RestaurantID, UserId, UserType);
-        }
-       
-        public bool SaveRestaurantGuest(SaveRestaurantGuestDTO SaveRestaurantGuest)
-        {
-            return _hostessDL.SaveRestaurantGuest(SaveRestaurantGuest);
-        }
-
-        public bool UpdateRestaurantGuest(UpdateRestaurantGuestDTO UpdateRestaurantGuest)
-        {
-            return _hostessDL.UpdateRestaurantGuest(UpdateRestaurantGuest);
-        }
-
         public DataSet GetRestaurantSectionTables(int RestaurantID)
         {
             return _hostessDL.GetRestaurantSectionTables(RestaurantID);
         }
 
-        public DataSet GetRestaurantStaffTables(int RestaurantID)
-        {
-            return _hostessDL.GetRestaurantStaffTables(RestaurantID);
-        }
-
         public DataSet GetRestaurantSelectStaff(int RestaurantID)
         {
             return _hostessDL.GetRestaurantSelectStaff(RestaurantID);
+        }
+
+        public bool UpdateRestaurantOpenDate(int RestaurantID)
+        {
+            return _hostessDL.UpdateRestaurantOpenDate(RestaurantID);
+        }
+
+        public int GetRestaurantOpenDate(int RestaurantID)
+        {
+            return _hostessDL.GetRestaurantOpenDate(RestaurantID);
+        }
+
+        public DataTable AssignColorsToServer(string strColors, int RestaurantID)
+        {
+            return _hostessDL.AssignColorsToServer(strColors, RestaurantID);
+        }
+
+        #endregion
+
+        #region Snapshot Setting
+
+        public DataSet GetRestaurantStaffTables(int RestaurantID)
+        {
+            return _hostessDL.GetRestaurantStaffTables(RestaurantID);
         }
 
         public DataTable GetServerwiseSnapshot(int RestaurantID)
@@ -205,36 +302,6 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetTablewiseSnapshot(RestaurantID);
         }
 
-        public DataTable GetSeatAGuest(int RestaurantID)
-        {
-            return _hostessDL.GetSeatAGuest(RestaurantID);
-        }
-        
-        public bool UpdateEmptyBookingStatus(int BookingID)
-        {
-            return _hostessDL.UpdateEmptyBookingStatus(BookingID);
-        }
-
-        public DataSet GetRestaurantGetSeatedNow(int RestaurantID)
-        {
-            return _hostessDL.GetRestaurantGetSeatedNow(RestaurantID);
-        }
-
-        public bool SaveRestaurantGetSeatedNow(SaveGetSeatedNow saveGetSeatedNow)
-        {
-            return _hostessDL.SaveRestaurantGetSeatedNow(saveGetSeatedNow);
-        }
-
-        public bool UpdateExtraTime(int BookingID, int AddTime)
-        {
-            return _hostessDL.UpdateExtraTime(BookingID, AddTime);
-        }
-
-        public bool UpdateCheckReceived(int BookingID)
-        {
-            return _hostessDL.UpdateCheckReceived(BookingID);
-        }
-
         public bool UpdateServerClockOut(int RestaurantID, int CurrentUserID, int NewUserID)
         {
             return _hostessDL.UpdateServerClockOut(RestaurantID, CurrentUserID, NewUserID);
@@ -249,24 +316,10 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.SaveDefineSections(restaurantDefineSections);
         }
+
         public bool SaveManageServer(List<RestaurantManageServer> restaurantManageServer)
         {
             return _hostessDL.SaveManageServer(restaurantManageServer);
-        }
-
-        public bool SaveRestaurantGuestImmediately(SaveRestaurantGuestDTO SaveRestaurantGuest)
-        {
-            return _hostessDL.SaveRestaurantGuestImmediately(SaveRestaurantGuest);
-        }
-
-        public bool UpdateRestaurantGuestImmediately(UpdateRestaurantGuestDTO UpdateRestaurantGuest)
-        {
-            return _hostessDL.UpdateRestaurantGuestImmediately(UpdateRestaurantGuest);
-        }
-
-        public bool UpdateWaitListAccept(int BookingID, string TableNumbers)
-        {
-            return _hostessDL.UpdateWaitListAccept(BookingID, TableNumbers);
         }
 
         public bool UpdateSnapshotTableEmptyAndCheck(int RestaurantID, int TableNumber, string UpdateType)
@@ -274,35 +327,14 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateSnapshotTableEmptyAndCheck(RestaurantID, TableNumber, UpdateType);
         }
 
-        public DataTable SendPushNotification(int TruflUserID)
-        {
-            return _hostessDL.SendPushNotification(TruflUserID);
-        }
-
-        public string SendPushNotification(PushNotification pushNotification)
-        {
-            return _hostessDL.SendPushNotification(pushNotification);
-        }
-
         public bool UpdateRestaurantSectionOpenClose(int RestaurantID, int FloorNumber, int ActiveStatus)
         {
             return _hostessDL.UpdateRestaurantSectionOpenClose(RestaurantID, FloorNumber, ActiveStatus);
         }
 
-        public bool UpdateRestaurantOpenDate(int RestaurantID)
-        {
-            return _hostessDL.UpdateRestaurantOpenDate(RestaurantID);
-        }
+        #endregion
 
-        public int GetRestaurantOpenDate(int RestaurantID)
-        {
-            return _hostessDL.GetRestaurantOpenDate(RestaurantID);
-        }
+        #endregion
 
-        public DataTable AssignColorsToServer(string strColors, int RestaurantID)
-        {
-            return _hostessDL.AssignColorsToServer(strColors, RestaurantID);
-        }
-      
     }
 }

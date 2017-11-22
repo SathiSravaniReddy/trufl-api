@@ -25,7 +25,6 @@ namespace Trufl.Services.Controllers
         HostessBL _hostessBL = new HostessBL();
         JsonResponseResult JsonResponseResult = new JsonResponseResult();
 
-        // Naresh Pittala changes done 2017-09-28
         [Route("GetNotifications")]
         [HttpGet]
         public object GetNotifications(int RestaurantID)
@@ -42,7 +41,6 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        // Naresh Pittala changes done 2017-09-28
         [Route("SaveNotifications")]
         [HttpPost]
         public object SaveNotifications(NotificationsDTO notifications)

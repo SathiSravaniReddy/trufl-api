@@ -32,7 +32,7 @@ namespace Trufl.Services.Controllers
             SettingsDTO res = new SettingsDTO();
             try
             {
-                res = _adminBL.GetRestaurantUserDetails(RestaurantID, TruflUserID, UserType);
+                res = _hostessBL.GetRestaurantUserDetails(RestaurantID, TruflUserID, UserType);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -40,7 +40,6 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
-
 
         [Route("UpdateRestaurantHostStatus")]
         [HttpPost]
@@ -75,11 +74,11 @@ namespace Trufl.Services.Controllers
 
         [Route("UpdateRestaurantEmployee")]
         [HttpPost]
-        public object spUpdateRestaurantEmployee(EmployeeConfigDTO employeeConfigDTO)
+        public object UpdateRestaurantEmployee(EmployeeConfigDTO employeeConfigDTO)
         {
             try
             {
-                bool res = _hostessBL.spUpdateRestaurantEmployee(employeeConfigDTO);
+                bool res = _hostessBL.UpdateRestaurantEmployee(employeeConfigDTO);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

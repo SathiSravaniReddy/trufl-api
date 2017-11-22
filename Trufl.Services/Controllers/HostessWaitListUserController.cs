@@ -25,11 +25,12 @@ namespace Trufl.Services.Controllers
         AdminBL _adminBL = new AdminBL();
         HostessBL _hostessBL = new HostessBL();
         JsonResponseResult JsonResponseResult = new JsonResponseResult();
-                
+
         #region WaitList
+
         [Route("GetWaitListUsers/{RestaurantID}")]
         [HttpGet]
-        public object GetTruflUserList(int RestaurantID)
+        public object GetWaitListUsers(int RestaurantID)
         {
             DataTable res = new DataTable();
             try
@@ -104,196 +105,6 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
-        #endregion
-
-        [Route("GetRestaurantOpenSections/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantOpenSections(int RestaurantID)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetRestaurantOpenSections(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("UpdateRestaurantActiveSections")]
-        [HttpPost]
-        public object UpdateRestaurantActiveSections([FromBody]List<RestaurantActiveSectionsDTO> restaurantActiveSections)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateRestaurantActiveSections(restaurantActiveSections);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("SaveRestaurantOpenSectionStaff")]
-        [HttpPost]
-        public object SaveRestaurantOpenSectionStaff([FromBody]List<RestaurantSectionStaffDTO> restaurantSectionStaff)
-        {
-            try
-            {
-            bool res = _hostessBL.SaveRestaurantOpenSectionStaff(restaurantSectionStaff);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantWaitTimeOpenSectionStaff/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantWaitTimeOpenSectionStaff(int RestaurantID)
-        {
-            DataSet res = new DataSet();
-            try
-            {
-            res = _hostessBL.GetRestaurantWaitTimeOpenSectionStaff(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("SaveRestaurantOpenTime")]
-        [HttpPost]
-        public object SaveRestaurantOpenTime(int RestaurantID, string Time)
-        {
-            try
-            {
-            bool res = _hostessBL.SaveRestaurantOpenTime(RestaurantID, Time);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantHostessOpenSectionDetails/{RestaurantID}/{UserType}")]
-        [HttpGet]
-        public object GetRestaurantHostessOpenSectionDetails(int RestaurantID, string UserType)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetRestaurantHostessOpenSectionDetails(RestaurantID, UserType);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantSectionTables/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantSectionTables(int RestaurantID)
-        {
-            DataSet res = new DataSet();
-            try
-            {
-            res = _hostessBL.GetRestaurantSectionTables(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantStaffTables/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantStaffTables(int RestaurantID)
-        {
-            DataSet res = new DataSet();
-            try
-            {
-            res = _hostessBL.GetRestaurantStaffTables(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantSelectStaff/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantSelectStaff(int RestaurantID)
-        {
-            DataSet res = new DataSet();
-            try
-            {
-            res = _hostessBL.GetRestaurantSelectStaff(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetServerwiseSnapshot/{RestaurantID}")]
-        [HttpGet]
-        public object GetServerwiseSnapshot(int RestaurantID)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetServerwiseSnapshot(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetCapacitywiseSnapshot/{RestaurantID}")]
-        [HttpGet]
-        public object GetCapacitywiseSnapshot(int RestaurantID)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetCapacitywiseSnapshot(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetTablewiseSnapshot/{RestaurantID}")]
-        [HttpGet]
-        public object GetTablewiseSnapshot(int RestaurantID)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetTablewiseSnapshot(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
 
         [Route("GetSeatAGuest/{RestaurantID}")]
         [HttpGet]
@@ -302,22 +113,7 @@ namespace Trufl.Services.Controllers
             DataTable res = new DataTable();
             try
             {
-            res = _hostessBL.GetSeatAGuest(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("UpdateEmptyBookingStatus/{BookingID}")]
-        [HttpPost]
-        public object UpdateEmptyBookingStatus(int BookingID)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateEmptyBookingStatus(BookingID);
+                res = _hostessBL.GetSeatAGuest(RestaurantID);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -333,7 +129,7 @@ namespace Trufl.Services.Controllers
             DataSet res = new DataSet();
             try
             {
-            res = _hostessBL.GetRestaurantGetSeatedNow(RestaurantID);
+                res = _hostessBL.GetRestaurantGetSeatedNow(RestaurantID);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -348,70 +144,7 @@ namespace Trufl.Services.Controllers
         {
             try
             {
-            bool res = _hostessBL.SaveRestaurantGetSeatedNow(saveGetSeatedNow);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("UpdateServerClockOut/{RestaurantID}/{CurrentUserID}/{NewUserID}")]
-        [HttpPost]
-        public object UpdateServerClockOut(int RestaurantID, int CurrentUserID, int NewUserID)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateServerClockOut(RestaurantID, CurrentUserID, NewUserID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("UpdateSwitchServer/{RestaurantID}/{TableNumber}/{NewUserID}")]
-        [HttpPost]
-        public object UpdateSwitchServer(int RestaurantID, int TableNumber, int NewUserID)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateSwitchServer(RestaurantID, TableNumber, NewUserID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("SaveDefineSections")]
-        [HttpPost]
-        public object SaveDefineSections(List<RestaurantDefineSections> restaurantDefineSections)
-        {
-            try
-            {
-            bool res = _hostessBL.SaveDefineSections(restaurantDefineSections);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-
-       
-
-        [Route("SaveManageServer")]
-        [HttpPost]
-        public object SaveManageServer(List<RestaurantManageServer> restaurantManageServer)
-        {
-            try
-            {
-            bool res = _hostessBL.SaveManageServer(restaurantManageServer);
+                bool res = _hostessBL.SaveRestaurantGetSeatedNow(saveGetSeatedNow);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -426,7 +159,7 @@ namespace Trufl.Services.Controllers
         {
             try
             {
-            bool res = _hostessBL.UpdateWaitListAccept(BookingID, TableNumbers);
+                bool res = _hostessBL.UpdateWaitListAccept(BookingID, TableNumbers);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -435,81 +168,6 @@ namespace Trufl.Services.Controllers
             }
         }
 
-       [Route("UpdateSnapshotTableEmptyAndCheck/{RestaurantID}/{TableNumber}/{UpdateType}")]
-        [HttpPost]
-        public object spUpdateSnapshotTableEmptyAndCheck(int RestaurantID, int TableNumber, string UpdateType)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateSnapshotTableEmptyAndCheck(RestaurantID, TableNumber, UpdateType);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("UpdateRestaurantSectionOpenClose/{RestaurantID}/{FloorNumber}/{ActiveStatus}")]
-        [HttpPost]
-        public object UpdateRestaurantSectionOpenClose(int RestaurantID, int FloorNumber, int ActiveStatus)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateRestaurantSectionOpenClose(RestaurantID, FloorNumber, ActiveStatus);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-
-        [Route("UpdateRestaurantOpenDate/{RestaurantID}")]
-        [HttpPost]
-        public object UpdateRestaurantOpenDate(int RestaurantID)
-        {
-            try
-            {
-            bool res = _hostessBL.UpdateRestaurantOpenDate(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetRestaurantOpenDate/{RestaurantID}")]
-        [HttpGet]
-        public object GetRestaurantOpenDate(int RestaurantID)
-        {
-            try
-            {
-            int iResult = _hostessBL.GetRestaurantOpenDate(RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = iResult, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("AssignColorsToServer/{strColors}/{RestaurantID}")]
-        [HttpGet]
-        public object AssignColorsToServer(string strColors, int RestaurantID)
-        {
-            try
-            {
-            DataTable dtResult = _hostessBL.AssignColorsToServer(strColors, RestaurantID);
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = dtResult, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
         [Route("SendPushNotification/{TruflUserID}")]
         [HttpGet]
         public object SendPushNotification(int TruflUserID)
@@ -517,7 +175,7 @@ namespace Trufl.Services.Controllers
             DataTable res = new DataTable();
             try
             {
-            res = _hostessBL.SendPushNotification(TruflUserID);
+                res = _hostessBL.SendPushNotification(TruflUserID);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -532,7 +190,7 @@ namespace Trufl.Services.Controllers
         {
             try
             {
-           string res = _hostessBL.SendPushNotification(pushNotification);
+                string res = _hostessBL.SendPushNotification(pushNotification);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -540,5 +198,340 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
+
+        #endregion
+
+        #region StartService
+
+        [Route("GetRestaurantOpenSections/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantOpenSections(int RestaurantID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.GetRestaurantOpenSections(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateRestaurantActiveSections")]
+        [HttpPost]
+        public object UpdateRestaurantActiveSections([FromBody]List<RestaurantActiveSectionsDTO> restaurantActiveSections)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateRestaurantActiveSections(restaurantActiveSections);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("SaveRestaurantOpenSectionStaff")]
+        [HttpPost]
+        public object SaveRestaurantOpenSectionStaff([FromBody]List<RestaurantSectionStaffDTO> restaurantSectionStaff)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveRestaurantOpenSectionStaff(restaurantSectionStaff);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetRestaurantWaitTimeOpenSectionStaff/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantWaitTimeOpenSectionStaff(int RestaurantID)
+        {
+            DataSet res = new DataSet();
+            try
+            {
+                res = _hostessBL.GetRestaurantWaitTimeOpenSectionStaff(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("SaveRestaurantOpenTime")]
+        [HttpPost]
+        public object SaveRestaurantOpenTime(int RestaurantID, string Time)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveRestaurantOpenTime(RestaurantID, Time);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetRestaurantHostessOpenSectionDetails/{RestaurantID}/{UserType}")]
+        [HttpGet]
+        public object GetRestaurantHostessOpenSectionDetails(int RestaurantID, string UserType)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.GetRestaurantHostessOpenSectionDetails(RestaurantID, UserType);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetRestaurantSectionTables/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantSectionTables(int RestaurantID)
+        {
+            DataSet res = new DataSet();
+            try
+            {
+                res = _hostessBL.GetRestaurantSectionTables(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetRestaurantSelectStaff/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantSelectStaff(int RestaurantID)
+        {
+            DataSet res = new DataSet();
+            try
+            {
+                res = _hostessBL.GetRestaurantSelectStaff(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("AssignColorsToServer/{strColors}/{RestaurantID}")]
+        [HttpGet]
+        public object AssignColorsToServer(string strColors, int RestaurantID)
+        {
+            try
+            {
+                DataTable dtResult = _hostessBL.AssignColorsToServer(strColors, RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = dtResult, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateRestaurantOpenDate/{RestaurantID}")]
+        [HttpPost]
+        public object UpdateRestaurantOpenDate(int RestaurantID)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateRestaurantOpenDate(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetRestaurantOpenDate/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantOpenDate(int RestaurantID)
+        {
+            try
+            {
+                int iResult = _hostessBL.GetRestaurantOpenDate(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = iResult, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        #endregion
+
+        #region Snapshot Settings
+
+        [Route("GetRestaurantStaffTables/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantStaffTables(int RestaurantID)
+        {
+            DataSet res = new DataSet();
+            try
+            {
+                res = _hostessBL.GetRestaurantStaffTables(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetServerwiseSnapshot/{RestaurantID}")]
+        [HttpGet]
+        public object GetServerwiseSnapshot(int RestaurantID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.GetServerwiseSnapshot(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetCapacitywiseSnapshot/{RestaurantID}")]
+        [HttpGet]
+        public object GetCapacitywiseSnapshot(int RestaurantID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.GetCapacitywiseSnapshot(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("GetTablewiseSnapshot/{RestaurantID}")]
+        [HttpGet]
+        public object GetTablewiseSnapshot(int RestaurantID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.GetTablewiseSnapshot(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateServerClockOut/{RestaurantID}/{CurrentUserID}/{NewUserID}")]
+        [HttpPost]
+        public object UpdateServerClockOut(int RestaurantID, int CurrentUserID, int NewUserID)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateServerClockOut(RestaurantID, CurrentUserID, NewUserID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateSwitchServer/{RestaurantID}/{TableNumber}/{NewUserID}")]
+        [HttpPost]
+        public object UpdateSwitchServer(int RestaurantID, int TableNumber, int NewUserID)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateSwitchServer(RestaurantID, TableNumber, NewUserID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("SaveDefineSections")]
+        [HttpPost]
+        public object SaveDefineSections(List<RestaurantDefineSections> restaurantDefineSections)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveDefineSections(restaurantDefineSections);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("SaveManageServer")]
+        [HttpPost]
+        public object SaveManageServer(List<RestaurantManageServer> restaurantManageServer)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveManageServer(restaurantManageServer);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateSnapshotTableEmptyAndCheck/{RestaurantID}/{TableNumber}/{UpdateType}")]
+        [HttpPost]
+        public object UpdateSnapshotTableEmptyAndCheck(int RestaurantID, int TableNumber, string UpdateType)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateSnapshotTableEmptyAndCheck(RestaurantID, TableNumber, UpdateType);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateRestaurantSectionOpenClose/{RestaurantID}/{FloorNumber}/{ActiveStatus}")]
+        [HttpPost]
+        public object UpdateRestaurantSectionOpenClose(int RestaurantID, int FloorNumber, int ActiveStatus)
+        {
+            try
+            {
+                bool res = _hostessBL.UpdateRestaurantSectionOpenClose(RestaurantID, FloorNumber, ActiveStatus);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        #endregion
+
     }
 }

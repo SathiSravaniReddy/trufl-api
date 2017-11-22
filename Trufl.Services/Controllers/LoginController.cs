@@ -24,7 +24,9 @@ namespace Trufl.Services.Controllers
         AdminBL _adminBL = new AdminBL();
         HostessBL _hostessBL = new HostessBL();
         JsonResponseResult JsonResponseResult = new JsonResponseResult();
+      
         #region LoginUser
+
         [Route("GetUserTypes/{UserType}/{RestaurantID}")]
         [HttpGet]
         public object GetUserTypes(string UserType, int RestaurantID)
@@ -39,7 +41,6 @@ namespace Trufl.Services.Controllers
             {
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
-
         }
 
         [Route("SignUp")]
@@ -55,7 +56,6 @@ namespace Trufl.Services.Controllers
             {
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
-
         }
 
         [Route("LoginAuthentication")]
@@ -140,23 +140,6 @@ namespace Trufl.Services.Controllers
         }
 
         #endregion
-
-
-        //[Route("VerifyEmailAddress")]
-        //[HttpGet]
-        //public object VerifyEmailAddress(string TruflUserEmailID)
-        //{
-        //    DataTable res = new DataTable();
-        //    res = _hostessBL.VerifyEmailAddress(TruflUserEmailID);
-        //    try
-        //    {
-        //        return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-        //    }
-        //}
-
+       
     }
 }
