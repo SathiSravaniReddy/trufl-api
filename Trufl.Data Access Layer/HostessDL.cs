@@ -2374,7 +2374,6 @@ namespace Trufl.Data_Access_Layer
                 dtClient.Rows.Add("true", "#" + Scolor, "1px solid #" + Scolor, "20px");
 
                 return dtClient;
-
             }
             catch (Exception ex)
             {
@@ -2991,8 +2990,6 @@ namespace Trufl.Data_Access_Layer
         }
 
         #endregion
-
-       
        
         #endregion
 
