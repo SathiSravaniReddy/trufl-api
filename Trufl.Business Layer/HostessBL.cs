@@ -169,9 +169,9 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetWaitListUsers(RestaurantID);
         }
 
-        public DataTable AcceptedWaitedUser(int BookingID, int BookinStatus)
+        public bool UpdateAcceptOffer(int BookingID, int BookingStatus)
         {
-            return _hostessDL.AcceptedWaitedUser(BookingID, BookinStatus);
+            return _hostessDL.UpdateAcceptOffer(BookingID, BookingStatus);
         }
 
         public bool SaveWaitedlistBooking(BookingTableDTO bookingTableInput)

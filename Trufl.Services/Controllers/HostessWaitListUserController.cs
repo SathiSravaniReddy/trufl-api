@@ -48,9 +48,9 @@ namespace Trufl.Services.Controllers
         [HttpPost]
         public object SaveWaitedlistBooking(BookingTableDTO bookingTableInput)
         {
-            bool res = _hostessBL.SaveWaitedlistBooking(bookingTableInput);
             try
             {
+            bool res = _hostessBL.SaveWaitedlistBooking(bookingTableInput);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
@@ -75,14 +75,14 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        [Route("AcceptedandRemovedWaitedUser/{BookingID}/{BookinStatus}")]
+        [Route("UpdateAcceptOffer/{BookingID}/{BookingStatus}")]
         [HttpPost]
-        public object AcceptedWaitedUser(int BookingID, int BookinStatus)
+        public object UpdateAcceptOffer(int BookingID, int BookingStatus)
         {
-            DataTable res = new DataTable();
+            //bool res = new DataTable();
             try
             {
-                res = _hostessBL.AcceptedWaitedUser(BookingID, BookinStatus);
+               bool res = _hostessBL.UpdateAcceptOffer(BookingID, BookingStatus);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

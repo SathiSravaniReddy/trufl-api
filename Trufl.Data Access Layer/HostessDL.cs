@@ -1340,13 +1340,13 @@ namespace Trufl.Data_Access_Layer
         }
 
         /// <summary>
-        /// This method 'AcceptedWaitedUser' will update the waited user info
+        /// This method 'UpdateAcceptOffer' will update the waited user info
         /// </summary>
-        /// <param name="AcceptedWaitedUser"></param>
+        /// <param name="UpdateAcceptOffer"></param>
         /// <returns>Returns 1 if Success, 0 for failure</returns>
-        public DataTable AcceptedWaitedUser(int BookingID, int BookinStatus)
+        public bool UpdateAcceptOffer(int BookingID, int BookingStatus)
         {
-            DataTable sendResponse = new DataTable();
+            //DataTable sendResponse = new DataTable();
             try
             {
                 using (SqlConnection con = new SqlConnection(connectionString))
@@ -1358,13 +1358,23 @@ namespace Trufl.Data_Access_Layer
                         cmd.CommandType = CommandType.StoredProcedure;
                         SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BookingID", BookingID);
                         tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@BookingStatus", BookinStatus);
+                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@BookingStatus", BookingStatus);
                         tvparam1.SqlDbType = SqlDbType.Int;
 
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
                         {
-                            da.Fill(sendResponse);
+                            return false;
                         }
+                        else
+                        {
+                            return true;
+                        }
+
+                        //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        //{
+                        //    da.Fill(sendResponse);
+                        //}
                     }
                 }
             }
@@ -1373,7 +1383,7 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
-            return sendResponse;
+            //return sendResponse;
         }
        
         /// <summary>
@@ -1818,6 +1828,8 @@ namespace Trufl.Data_Access_Layer
             }
             return result;
         }
+
+      
 
         #endregion
 
