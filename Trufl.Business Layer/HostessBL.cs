@@ -174,6 +174,10 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateAcceptOffer(BookingID, BookingStatus);
         }
 
+        public DataTable UpdateWaitListAcceptNotify(int RestaurantID, int BookingID, string UpdateType)
+        {
+            return _hostessDL.UpdateWaitListAcceptNotify(RestaurantID, BookingID, UpdateType);
+        }
         public bool SaveWaitedlistBooking(BookingTableDTO bookingTableInput)
         {
             return _hostessDL.SaveWaitedlistBooking(bookingTableInput);
@@ -204,9 +208,9 @@ namespace Trufl.Business_Layer
             return _hostessDL.SaveRestaurantGetSeatedNow(saveGetSeatedNow);
         }
 
-        public bool UpdateWaitListAccept(int BookingID, string TableNumbers)
+        public bool UpdateWaitListSeated(int BookingID, string TableNumbers)
         {
-            return _hostessDL.UpdateWaitListAccept(BookingID, TableNumbers);
+            return _hostessDL.UpdateWaitListSeated(BookingID, TableNumbers);
         }
 
         public DataTable SendPushNotification(int TruflUserID)

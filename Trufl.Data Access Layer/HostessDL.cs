@@ -1385,7 +1385,56 @@ namespace Trufl.Data_Access_Layer
             }
             //return sendResponse;
         }
-       
+
+
+        /// <summary>
+        /// This method 'UpdateWaitListAcceptNotify' will update the waited user info
+        /// </summary>
+        /// <param name="UpdateWaitListAcceptNotify"></param>
+        /// <returns>Returns DataTable</returns>
+        public DataTable UpdateWaitListAcceptNotify(int RestaurantID, int BookingID, string UpdateType)
+        {
+            DataTable sendResponse = new DataTable();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spUpdateWaitListAcceptNotify", con))
+                    {
+                        cmd.CommandTimeout = TruflConstants.DBResponseTime;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@BookingID", BookingID);
+                        tvparam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@UpdateType", UpdateType);
+                        tvparam2.SqlDbType = SqlDbType.Text;
+
+                        //int status = cmd.ExecuteNonQuery();
+                        //if (status == 0)
+                        //{
+                        //    return false;
+                        //}
+                        //else
+                        //{
+                        //    return true;
+                        //}
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(sendResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+            return sendResponse;
+        }
         /// <summary>
         /// This method 'SaveWaitedlistBooking' will save all the waited list users
         /// </summary>
@@ -1694,7 +1743,7 @@ namespace Trufl.Data_Access_Layer
         /// <param name="BookingID">Booking ID as Input</param>
         /// <param name="TableNumbers">TableNumbers as Input</param>
         /// <returns>Returns 1 on updating the details or 0 on error</returns>
-        public bool UpdateWaitListAccept(int BookingID, string TableNumbers)
+        public bool UpdateWaitListSeated(int BookingID, string TableNumbers)
         {
             try
             {
@@ -1702,7 +1751,7 @@ namespace Trufl.Data_Access_Layer
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spUpdateWaitListAccept", con))
+                    using (SqlCommand cmd = new SqlCommand("spUpdateWaitListSeated", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BookingID", BookingID);

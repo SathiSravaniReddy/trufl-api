@@ -91,6 +91,38 @@ namespace Trufl.Services.Controllers
             }
         }
 
+        [Route("UpdateWaitListAccept/{RestaurantID}/{BookingID}")]
+        [HttpGet]
+        public object UpdateWaitListAccept(int RestaurantID, int BookingID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.UpdateWaitListAcceptNotify(RestaurantID, BookingID, "ACCEPT");
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("UpdateWaitListNotify/{RestaurantID}/{BookingID}")]
+        [HttpGet]
+        public object UpdateWaitListNotify(int RestaurantID, int BookingID)
+        {
+            DataTable res = new DataTable();
+            try
+            {
+                res = _hostessBL.UpdateWaitListAcceptNotify(RestaurantID, BookingID, "NOTIFY");
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
         [Route("UpdateBooking")]
         [HttpPost]
         public object UpdateBooking(UpdateBookingTableNumberDTO updateBookingTableNumber)
@@ -153,13 +185,13 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        [Route("UpdateWaitListAccept/{BookingID}/{TableNumbers}")]
+        [Route("UpdateWaitListSeated/{BookingID}/{TableNumbers}")]
         [HttpPost]
-        public object UpdateWaitListAccept(int BookingID, string TableNumbers)
+        public object UpdateWaitListSeated(int BookingID, string TableNumbers)
         {
             try
             {
-                bool res = _hostessBL.UpdateWaitListAccept(BookingID, TableNumbers);
+                bool res = _hostessBL.UpdateWaitListSeated(BookingID, TableNumbers);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
