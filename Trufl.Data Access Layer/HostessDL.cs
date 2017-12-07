@@ -866,6 +866,38 @@ namespace Trufl.Data_Access_Layer
         }
 
         /// <summary>
+        /// This method 'GetVerifyEmailID' will Get Trufl User Details used to verify the email Id for Duplication
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetVerifyEmailID()
+        {
+            DataTable sendResponse = new DataTable();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetVerifyEmailID", con))
+                    {
+                        cmd.CommandTimeout = TruflConstants.DBResponseTime;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                       
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(sendResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+            return sendResponse;
+        }
+
+        /// <summary>
         /// This method 'spGetEmployeConfigration' will Get Employe Configration details
         /// </summary>
         /// <param name=" data"></param>
@@ -1307,7 +1339,7 @@ namespace Trufl.Data_Access_Layer
         /// </summary>
         /// <param name="RestaurantID"></param>
         /// <returns></returns>
-       public DataTable GetWaitListUsers(int RestaurantID)
+        public DataTable GetWaitListUsers(int RestaurantID)
         {
             DataTable sendResponse = new DataTable();
             try
@@ -1385,7 +1417,6 @@ namespace Trufl.Data_Access_Layer
             }
             //return sendResponse;
         }
-
 
         /// <summary>
         /// This method 'UpdateWaitListAcceptNotify' will update the waited user info
@@ -1877,8 +1908,6 @@ namespace Trufl.Data_Access_Layer
             }
             return result;
         }
-
-      
 
         #endregion
 
@@ -2457,6 +2486,39 @@ namespace Trufl.Data_Access_Layer
                 {
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand("spUpdateRestaurantOpenDate", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
+        public bool ResetRestaurantOpenDate(int RestaurantID)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spResetRestaurantOpenDate", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);

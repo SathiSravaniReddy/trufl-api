@@ -128,6 +128,11 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetRestaurantTables(RestaurantID, UserID);
         }
 
+        public DataTable GetVerifyEmailID()
+        {
+            return _hostessDL.GetVerifyEmailID();
+        }
+
         public DataSet GetRestaurantGuest(int RestaurantID, int UserId, string UserType)
         {
             return _hostessDL.GetRestaurantGuest(RestaurantID, UserId, UserType);
@@ -270,6 +275,11 @@ namespace Trufl.Business_Layer
         public bool UpdateRestaurantOpenDate(int RestaurantID)
         {
             return _hostessDL.UpdateRestaurantOpenDate(RestaurantID);
+        }
+
+        public bool ResetRestaurantOpenDate(int RestaurantID)
+        {
+            return _hostessDL.ResetRestaurantOpenDate(RestaurantID);
         }
 
         public int GetRestaurantOpenDate(int RestaurantID)
