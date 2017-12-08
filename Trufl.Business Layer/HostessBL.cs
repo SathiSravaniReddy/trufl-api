@@ -346,6 +346,11 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateRestaurantSectionOpenClose(RestaurantID, FloorNumber, ActiveStatus);
         }
 
+        public bool GetVerifySnapShot(int RestaurantID)
+        {
+            return _hostessDL.GetVerifySnapShot(RestaurantID);
+        }
+
         #endregion
 
         #endregion

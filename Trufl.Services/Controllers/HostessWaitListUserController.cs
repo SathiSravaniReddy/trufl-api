@@ -577,7 +577,20 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
-
+        [Route("GetVerifySnapShot/{RestaurantID}")]
+        [HttpGet]
+        public object GetVerifySnapShot(int RestaurantID)
+        {
+            try
+            {
+                bool res = _hostessBL.GetVerifySnapShot(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = ((System.Data.SqlClient.SqlException)ex).Number.ToString(), _Data = ex.Message, _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = ex.ToString() });
+            }
+        }
         #endregion
 
     }

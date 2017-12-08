@@ -2509,7 +2509,12 @@ namespace Trufl.Data_Access_Layer
                 throw ex;
             }
         }
-
+        
+        /// <summary>
+        /// Reset the start Service used for demo purpose
+        /// </summary>
+        /// <param name="RestaurantID"></param>
+        /// <returns></returns>
         public bool ResetRestaurantOpenDate(int RestaurantID)
         {
             try
@@ -3112,8 +3117,50 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+        /// <summary>
+        /// Verify the records in Snapshot For
+        /// 1. Sections are Open.
+        /// 2. Server are assigned Tables.
+        /// 3. Servers are assigned to Open Sections.
+        /// 4. Network Error.
+        /// </summary>
+        /// <param name="RestaurantID"></param>
+        /// <returns></returns>
+        public bool GetVerifySnapShot(int RestaurantID)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetVerifySnapShot", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
         #endregion
-       
+
         #endregion
 
     }
