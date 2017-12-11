@@ -240,6 +240,50 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+       /// <summary>
+       /// Verify whether the user is already seated.
+       /// </summary>
+       /// <param name="BookingID"></param>
+       /// <param name="TruflUserID"></param>
+       /// <param name="RestaurantID"></param>
+       /// <returns></returns>
+        public bool VerifySeatedUsers(int BookingID, int TruflUserID, int RestaurantID)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spVerifySeatedUsers", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BookingID", BookingID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
+                        tvpParam2.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam3.SqlDbType = SqlDbType.Int;
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region LoginController

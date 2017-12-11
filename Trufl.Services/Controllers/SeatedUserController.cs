@@ -103,6 +103,20 @@ namespace Trufl.Services.Controllers
             }
         }
 
+        [Route("VerifySeatedUsers/{BookingID}/{TruflUserID}/{RestaurantID}")]
+        [HttpGet]
+        public object VerifySeatedUsers(int BookingID, int TruflUserID, int RestaurantID)
+        {
+            try
+            {
+                bool res = _hostessBL.VerifySeatedUsers(BookingID, TruflUserID, RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess});
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.Message, _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = ex.ToString()});
+            }
+        }
         #endregion
     }
 }

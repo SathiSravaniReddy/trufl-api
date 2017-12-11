@@ -41,6 +41,11 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateEmptyBookingStatus(BookingID);
         }
 
+        public bool VerifySeatedUsers(int BookingID, int TruflUserID, int RestaurantID)
+        {
+            return _hostessDL.VerifySeatedUsers(BookingID, TruflUserID, RestaurantID);
+        }
+
         #endregion
 
         #region LoginController
