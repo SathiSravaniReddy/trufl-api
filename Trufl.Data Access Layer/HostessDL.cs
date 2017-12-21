@@ -1395,7 +1395,6 @@ namespace Trufl.Data_Access_Layer
                     {
                         cmd.CommandTimeout = TruflConstants.DBResponseTime;
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.CommandType = CommandType.StoredProcedure;
                         SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
                         tvpParam.SqlDbType = SqlDbType.Int;
 
@@ -1405,7 +1404,6 @@ namespace Trufl.Data_Access_Layer
                         }
                     }
                 }
-                // }
             }
             catch (Exception ex)
             {
@@ -1416,13 +1414,54 @@ namespace Trufl.Data_Access_Layer
         }
 
         /// <summary>
+        /// Reset the waitlisttime to synchronize with the current System Time
+        /// </summary>
+        /// <param name="RestaurantID"></param>
+        /// <returns></returns>
+        public bool ResetWaitList(int RestaurantID)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spResetWaitList", con))
+                    {
+                        cmd.CommandTimeout = TruflConstants.DBResponseTime;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        int status = cmd.ExecuteNonQuery();
+                        
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+                 
+                   
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// This method 'UpdateAcceptOffer' will update the waited user info
         /// </summary>
         /// <param name="UpdateAcceptOffer"></param>
         /// <returns>Returns 1 if Success, 0 for failure</returns>
         public bool UpdateAcceptOffer(int BookingID, int BookingStatus)
         {
-            //DataTable sendResponse = new DataTable();
             try
             {
                 using (SqlConnection con = new SqlConnection(connectionString))
@@ -1446,11 +1485,6 @@ namespace Trufl.Data_Access_Layer
                         {
                             return true;
                         }
-
-                        //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        //{
-                        //    da.Fill(sendResponse);
-                        //}
                     }
                 }
             }
@@ -1459,7 +1493,6 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
-            //return sendResponse;
         }
 
         /// <summary>
@@ -1510,6 +1543,7 @@ namespace Trufl.Data_Access_Layer
             }
             return sendResponse;
         }
+
         /// <summary>
         /// This method 'SaveWaitedlistBooking' will save all the waited list users
         /// </summary>
@@ -3204,6 +3238,145 @@ namespace Trufl.Data_Access_Layer
         }
 
         #endregion
+
+        public DataSet GetRestaurantRewards(int TruflUserID, int RestaurantID)
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetRestaurantRewards", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
+        public bool SaveRestaurantRewards(RestaurantRewards restaurantRewards)
+        {
+            try
+            {
+                int TotalRewardsPoints = 0, RewardsCalc = 0, Membership = 0;
+                bool isWinBid = false;
+                string OperationType;
+
+
+                DataSet dsUserRewards = GetRestaurantRewards(restaurantRewards.TruflUserID, restaurantRewards.RestaurantID);
+
+                if (dsUserRewards.Tables[0].Rows.Count >= 1)
+                {
+                    OperationType = "UPDATE";
+                    Membership = Convert.ToInt16(dsUserRewards.Tables[0].Rows[0]["MembershipTypeID"]);
+                    TotalRewardsPoints = Convert.ToInt16(dsUserRewards.Tables[0].Rows[0]["RewardPoints"]);
+                    isWinBid = Convert.ToBoolean(dsUserRewards.Tables[0].Rows[0]["IsWinBid"]);
+                }
+                else
+                    OperationType = "INSERT";
+
+
+                switch (restaurantRewards.RewardType.ToUpper())
+                {
+                    case "AUCTION":
+                        RewardsCalc = 25;
+                        break;
+                    case "WIN_AUCTION":
+                        if (!isWinBid)
+                        {
+                            RewardsCalc = 100;
+                            isWinBid = true;
+                        }
+                        break;
+                    case "INVITE":
+                        //RewardsCalc = 500;
+                        break;
+                    case "GIFT":
+                        RewardsCalc = 5000;
+                        break;
+                    case "SEATED":
+                        RewardsCalc = 25;
+                        break;
+                    case "BILL_AMOUNT":
+                        if (restaurantRewards.BillAmount < 100)
+                            RewardsCalc = 0;
+                        else if (restaurantRewards.BillAmount < 250)
+                            RewardsCalc = 100;
+                        else if (restaurantRewards.BillAmount < 500)
+                            RewardsCalc = 500;
+                        else if (restaurantRewards.BillAmount < 1000)
+                            RewardsCalc = 1500;
+                        else
+                            RewardsCalc = 4000;
+                        break;
+                }
+                TotalRewardsPoints += RewardsCalc;
+                DataView dv = new DataView(dsUserRewards.Tables[1]);
+                dv.RowFilter = "MembershipCode = 'R'";
+
+                foreach(DataRowView drv in dv)
+                    if (TotalRewardsPoints >= Convert.ToInt16(drv["Points"]))
+                    {
+                        Membership = Convert.ToInt16(drv["MembershipTypeID"]);
+                    }
+
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spSaveRestaurantRewards", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", restaurantRewards.TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", restaurantRewards.RestaurantID);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@MembershipTypeID", Membership);
+                        tvpParam2.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RewardPoints", TotalRewardsPoints);
+                        tvpParam3.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsWinBid", isWinBid);
+                        tvpParam4.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", OperationType);
+                        tvpParam5.SqlDbType = SqlDbType.Text;
+
+                        SqlParameter pvNewId = new SqlParameter();
+                        pvNewId.ParameterName = "@RetVal";
+                        pvNewId.DbType = DbType.Int32;
+                        pvNewId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(pvNewId);
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         #endregion
 

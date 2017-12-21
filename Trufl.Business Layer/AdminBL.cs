@@ -42,9 +42,9 @@ namespace Trufl.Business_Layer
             return _adminDL.SaveRestaurant(restaurant);
         }
 
-        public DataTable GetAllRestaurants()
+        public DataTable GetAllRestaurants(int ID, string QType)
         {
-            return _adminDL.GetAllRestaurants();
+            return _adminDL.GetAllRestaurants(ID, QType);
         }
         
         public bool SaveRestaurantSettings(RestaurantSettingsDTO RestaurantSettings)

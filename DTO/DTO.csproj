@@ -63,6 +63,7 @@
     <Compile Include="RestaurantActiveSectionsDTO.cs" />
     <Compile Include="RestaurantDefineSections.cs" />
     <Compile Include="RestaurantManageServer.cs" />
+    <Compile Include="RestaurantRewards.cs" />
     <Compile Include="RestaurantSeatedUsers.cs" />
     <Compile Include="RestaurantSeatedUsersDTO.cs" />
     <Compile Include="RestaurantOpenSectionDTO.cs" />

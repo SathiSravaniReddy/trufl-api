@@ -42,12 +42,12 @@ namespace Trufl.Services.Controllers
         }
         [Route("GetAllRestaurants")]
         [HttpGet]
-        public object GetAllRestaurants()
+        public object GetAllRestaurants(int ID, string QType)
         {
             DataTable res = new DataTable();
             try
             {
-            res = _adminBL.GetAllRestaurants();
+            res = _adminBL.GetAllRestaurants(ID, QType);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

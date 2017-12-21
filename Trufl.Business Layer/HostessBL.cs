@@ -179,6 +179,11 @@ namespace Trufl.Business_Layer
             return _hostessDL.GetWaitListUsers(RestaurantID);
         }
 
+        public bool ResetWaitList(int RestaurantID)
+        {
+            return _hostessDL.ResetWaitList(RestaurantID);
+        }
+
         public bool UpdateAcceptOffer(int BookingID, int BookingStatus)
         {
             return _hostessDL.UpdateAcceptOffer(BookingID, BookingStatus);
@@ -358,6 +363,15 @@ namespace Trufl.Business_Layer
 
         #endregion
 
+        public DataSet GetRestaurantRewards(int TruflUserID, int RestaurantID)
+        {
+            return _hostessDL.GetRestaurantRewards(TruflUserID, RestaurantID);
+        }
+
+        public bool SaveRestaurantRewards(RestaurantRewards restaurantRewards)
+        {
+            return _hostessDL.SaveRestaurantRewards(restaurantRewards);
+        }
         #endregion
 
     }

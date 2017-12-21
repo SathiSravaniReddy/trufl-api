@@ -44,6 +44,21 @@ namespace Trufl.Services.Controllers
             }
         }
 
+        [Route("ResetWaitList/{RestaurantID}")]
+        [HttpGet]
+        public object ResetWaitList(int RestaurantID)
+        {
+            try
+            {
+              bool res = _hostessBL.ResetWaitList(RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
         [Route("SaveWaitedlistBooking")]
         [HttpPost]
         public object SaveWaitedlistBooking(BookingTableDTO bookingTableInput)
@@ -592,6 +607,37 @@ namespace Trufl.Services.Controllers
             }
         }
         #endregion
+
+        [Route("GetRestaurantRewards/{TruflUserID}/{RestaurantID}")]
+        [HttpGet]
+        public object GetRestaurantRewards(int TruflUserID, int RestaurantID)
+        {
+            DataSet res = new DataSet();
+            try
+            {
+                res = _hostessBL.GetRestaurantRewards(TruflUserID, RestaurantID);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
+        [Route("SaveRestaurantRewards")]
+        [HttpPost]
+        public object SaveRestaurantRewards(RestaurantRewards restaurantRewards)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveRestaurantRewards(restaurantRewards);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
 
     }
 }

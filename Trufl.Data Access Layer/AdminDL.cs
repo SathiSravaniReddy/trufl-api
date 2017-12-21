@@ -272,7 +272,7 @@ namespace Trufl.Data_Access_Layer
         /// This method 'GetAllRestaurants ' returns AllRestaurants details
         /// </summary>
         /// <returns>Notifications List</returns>
-        public DataTable GetAllRestaurants()
+        public DataTable GetAllRestaurants(int ID, string QType)
         {
             DataTable sendResponse = new DataTable();
             try
@@ -283,11 +283,17 @@ namespace Trufl.Data_Access_Layer
                     using (SqlCommand cmd = new SqlCommand("spGetAllRestaurants", sqlcon))
                     {
                         cmd.CommandTimeout = TruflConstants.DBResponseTime;
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@ID", ID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@Type", QType);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
 
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
                             da.Fill(sendResponse);
                         }
+
                     }
                 }
             }
