@@ -3274,9 +3274,9 @@ namespace Trufl.Data_Access_Layer
             try
             {
                 int TotalRewardsPoints = 0, RewardsCalc = 0, Membership = 0;
-                bool isWinBid = false;
-                string OperationType;
-
+                int TotalTruflRewardsPoints = 0, TruflRewardsCalc = 0, TruflMembership = 0, TruflBonusPer=0, TruflCashBack = 0;
+                bool isWinBid = false, isCashbask = false;
+                string OperationType, TruflOperationType;
 
                 DataSet dsUserRewards = GetRestaurantRewards(restaurantRewards.TruflUserID, restaurantRewards.RestaurantID);
 
@@ -3290,12 +3290,22 @@ namespace Trufl.Data_Access_Layer
                 else
                     OperationType = "INSERT";
 
+                if (dsUserRewards.Tables[1].Rows.Count >= 1)
+                {
+                    TruflOperationType = "UPDATE";
+                    TruflMembership = Convert.ToInt16(dsUserRewards.Tables[1].Rows[0]["MembershipTypeID"]);
+                    TotalTruflRewardsPoints = Convert.ToInt32(dsUserRewards.Tables[1].Rows[0]["RewardPoints"]);
+                   
+                }
+                else
+                    TruflOperationType = "INSERT";
+
 
                 switch (restaurantRewards.RewardType.ToUpper())
                 {
                     case "AUCTION":
                         RewardsCalc = 25;
-                        break;
+                        break; 
                     case "WIN_AUCTION":
                         if (!isWinBid)
                         {
@@ -3313,6 +3323,7 @@ namespace Trufl.Data_Access_Layer
                         RewardsCalc = 25;
                         break;
                     case "BILL_AMOUNT":
+                        isCashbask = true;
                         if (restaurantRewards.BillAmount < 100)
                             RewardsCalc = 0;
                         else if (restaurantRewards.BillAmount < 250)
@@ -3326,14 +3337,28 @@ namespace Trufl.Data_Access_Layer
                         break;
                 }
                 TotalRewardsPoints += RewardsCalc;
-                DataView dv = new DataView(dsUserRewards.Tables[1]);
+
+                DataView dv = new DataView(dsUserRewards.Tables[2]);
                 dv.RowFilter = "MembershipCode = 'R'";
 
                 foreach(DataRowView drv in dv)
-                    if (TotalRewardsPoints >= Convert.ToInt16(drv["Points"]))
+                    if (TotalTruflRewardsPoints >= Convert.ToInt16(drv["Points"]))
                     {
                         Membership = Convert.ToInt16(drv["MembershipTypeID"]);
                     }
+
+                dv.RowFilter = "MembershipCode = 'T'";
+
+                foreach (DataRowView drv in dv)
+                    if (TotalTruflRewardsPoints >= Convert.ToInt32(drv["Points"]))
+                    {
+                        TruflMembership = Convert.ToInt32(drv["MembershipTypeID"]);
+                        TruflBonusPer = Convert.ToInt32(drv["BonusPointsPer"]);
+                        if (isCashbask)
+                            TruflCashBack = Convert.ToInt32(drv["TruflDiscount"]);
+                    }
+                TruflRewardsCalc = RewardsCalc + Convert.ToInt32((RewardsCalc * TruflBonusPer) / 100);
+                TotalTruflRewardsPoints += TruflRewardsCalc;
 
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
@@ -3353,7 +3378,43 @@ namespace Trufl.Data_Access_Layer
                         tvpParam4.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", OperationType);
                         tvpParam5.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflCashBack", 0);
+                        tvpParam6.SqlDbType = SqlDbType.Int;
 
+                        SqlParameter pvNewId = new SqlParameter();
+                        pvNewId.ParameterName = "@RetVal";
+                        pvNewId.DbType = DbType.Int32;
+                        pvNewId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(pvNewId);
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            //return false;
+                        }
+                        else
+                        {
+                            //return true;
+                        }
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand("spSaveRestaurantRewards", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", restaurantRewards.TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", 0);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@MembershipTypeID", TruflMembership);
+                        tvpParam2.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RewardPoints", TotalTruflRewardsPoints);
+                        tvpParam3.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsWinBid", 0);
+                        tvpParam4.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", TruflOperationType);
+                        tvpParam5.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflCashBack", TruflCashBack);
+                        tvpParam6.SqlDbType = SqlDbType.Int;
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";
                         pvNewId.DbType = DbType.Int32;
