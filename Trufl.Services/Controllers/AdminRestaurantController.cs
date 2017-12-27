@@ -41,7 +41,7 @@ namespace Trufl.Services.Controllers
             }
         }
         [Route("GetAllRestaurants")]
-        [HttpGet]
+        [HttpPost]
         public object GetAllRestaurants(int ID, string QType)
         {
             DataTable res = new DataTable();
