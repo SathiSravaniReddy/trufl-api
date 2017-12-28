@@ -372,6 +372,16 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.SaveRestaurantRewards(restaurantRewards);
         }
+
+        public DataSet GetRestaurantMealTimings(int RestaurantID)
+        {
+            return _hostessDL.GetRestaurantMealTimings(RestaurantID);
+        }
+
+        public DataTable CalcMealTime(int RestaurantID)
+        {
+            return _hostessDL.CalcMealTime(RestaurantID);
+        }
         #endregion
 
     }

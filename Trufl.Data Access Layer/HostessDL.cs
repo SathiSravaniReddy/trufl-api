@@ -3439,6 +3439,124 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+        public DataSet GetRestaurantMealTimings(int RestaurantID)
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetRestaurantMealTimings", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                        dsResponse.Tables[0].TableName = "MealTiming";
+                        dsResponse.Tables[1].TableName = "MealType";
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
+        public DataTable CalcMealTime(int RestaurantID)
+        {
+            DataSet dsMealTiming;
+            DateTime MealStartTime, MealEndTime;
+            int sDay, eDay, MealID;
+            string strDay, MealType, From, To;
+            bool blMealType;
+
+            var dtMeal = new DataTable();
+            //dtMeal.Columns.Add("MealType", typeof(string));
+            dtMeal.Columns.Add("MealTime", typeof(string));
+
+            try
+            {
+                dsMealTiming = GetRestaurantMealTimings(RestaurantID);
+
+                foreach (DataRow drMealType in dsMealTiming.Tables["MealType"].Rows)
+                {
+                    MealID = Convert.ToInt16(drMealType["MealID"]);
+                    MealType = Convert.ToString(drMealType["MealType"]);
+                    blMealType = false;
+
+                    DataView dv = new DataView(dsMealTiming.Tables["MealTiming"]);
+                    dv.RowFilter = "MealID = " + MealID;
+                    dv.Sort = "MealStartTime, MealEndTime";
+                    if (dv.Count > 0)
+                    {
+                        MealStartTime = Convert.ToDateTime(dv[0]["MealStartTime"]);
+                        MealEndTime = Convert.ToDateTime(dv[0]["MealEndTime"]);
+                        sDay = Convert.ToInt16(dv[0]["Day"]);
+                        eDay = Convert.ToInt16(dv[0]["Day"]);
+
+                        foreach (DataRowView drv in dv)
+                        {
+                            if ((Convert.ToDateTime(drv["MealStartTime"]) != MealStartTime) || (Convert.ToDateTime(drv["MealEndTime"]) != MealEndTime))
+                            {
+                                From = ((DayOfWeek)(sDay % 7)).ToString();
+                                if (sDay == eDay)
+                                    To = "";
+                                else
+                                    To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
+                                //strDay = From + To + " : " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+
+                                if (blMealType)
+                                    strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                else
+                                {
+                                    strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                    blMealType = true;
+                                }
+
+                                dtMeal.Rows.Add(strDay);
+                                MealStartTime = Convert.ToDateTime(drv["MealStartTime"]);
+                                MealEndTime = Convert.ToDateTime(drv["MealEndTime"]);
+                                sDay = Convert.ToInt16(drv["Day"]);
+                                eDay = Convert.ToInt16(drv["Day"]);
+                            }
+                            else
+                            {
+                                eDay = Convert.ToInt16(drv["Day"]);
+                            }
+                        }
+                        From = ((DayOfWeek)(sDay % 7)).ToString();
+                        if (sDay == eDay)
+                            To = "";
+                        else
+                            To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
+
+                        //strDay = From + To + " : " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        if (blMealType)
+                            strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        else
+                        {
+                            strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                            blMealType = true;
+                        }
+
+                        dtMeal.Rows.Add(strDay);
+                    }
+                }
+                return dtMeal;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion
 
     }
