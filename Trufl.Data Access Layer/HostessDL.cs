@@ -9,10 +9,16 @@ using System.Configuration;
 using DTO;
 using Trufl.Logging;
 using TruflEmailService;
-
 using System.IO;
 using System.Net;
 using System.Net.Http;
+
+//using Microsoft.WindowsAzure;
+//using Microsoft.WindowsAzure.Storage;
+//using Microsoft.WindowsAzure.Storage.Blob;
+//using Microsoft.Azure;
+
+
 
 namespace Trufl.Data_Access_Layer
 {
@@ -1217,6 +1223,12 @@ namespace Trufl.Data_Access_Layer
                         tvpParam10.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@Description", SaveRestaurantGuest.Description);
                         tvpParam11.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@TableType1", SaveRestaurantGuest.TableType1);
+                        tvpParam12.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam13 = cmd.Parameters.AddWithValue("@TableType2", SaveRestaurantGuest.TableType2);
+                        tvpParam13.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@TableType3", SaveRestaurantGuest.TableType3);
+                        tvpParam14.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
@@ -1283,6 +1295,12 @@ namespace Trufl.Data_Access_Layer
                         tvpParam10.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@BookingID", UpdateRestaurantGuest.BookingID);
                         tvpParam11.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@TableType1", UpdateRestaurantGuest.TableType1);
+                        tvpParam12.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam13 = cmd.Parameters.AddWithValue("@TableType2", UpdateRestaurantGuest.TableType2);
+                        tvpParam13.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@TableType3", UpdateRestaurantGuest.TableType3);
+                        tvpParam14.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
@@ -3558,6 +3576,71 @@ namespace Trufl.Data_Access_Layer
             }
         }
         #endregion
+
+        //public bool GetImages()
+        //{
+
+        //    //Model.ApplicantInfo appdata = new Model.ApplicantInfo();
+
+        //    string appdata = "https://truflimages.blob.core.windows.net/images/download.jpg";
+
+        //    string ResumeName = "download.jpg";
+
+        //    //ResumeName = appdata.ResumeName;
+        //    string ResumePath = "https://truflimages.blob.core.windows.net/images/";
+        //    //ResumePath = appdata.ResumePath;
+
+        //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"].ToString());
+
+        //    CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
+        //    CloudFileShare share = fileClient.GetShareReference("hrms");
+        //    CloudFileDirectory root = share.GetRootDirectoryReference();
+        //    CloudFileDirectory dir = root.GetDirectoryReference("resumes");
+        //    dir.CreateIfNotExistsAsync();
+        //    CloudFile cloudfile = dir.GetFileReference(ResumeName);
+
+        //    cloudfile.FetchAttributes();
+
+        //    long fileByteLength = cloudfile.Properties.Length;
+        //    Byte[] myByteArray = new Byte[fileByteLength];
+
+        //    cloudfile.DownloadToByteArray(myByteArray, 0);
+
+        //    string text = "";
+
+        //    text = convertByteToString(myByteArray);
+        //    appdata.ResumeContent = text;
+        //    //return appdata;
+
+        //    //CloudBlobClient blobClient;
+        //    //const string blobContainerName = "webappstoragedotnet-imagecontainer";
+        //    //CloudBlobContainer blobContainer;
+
+        //    //// Retrieve storage account information from connection string
+        //    //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
+        //    //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
+
+        //    //// Create a blob client for interacting with the blob service.
+        //    //blobClient = storageAccount.CreateCloudBlobClient();
+        //    //blobContainer = blobClient.GetContainerReference(blobContainerName);
+        //    //await blobContainer.CreateIfNotExistsAsync();
+
+        //    //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
+        //    //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
+        //    //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
+        //    //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
+        //    //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+        //    //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
+        //    //List<Uri> allBlobs = new List<Uri>();
+        //    //foreach (IListBlobItem blob in blobContainer.ListBlobs())
+        //    //{
+        //    //    if (blob.GetType() == typeof(CloudBlockBlob))
+        //    //        allBlobs.Add(blob.Uri);
+        //    //}
+
+        //    return true;// View(allBlobs);
+        //}
 
     }
 }
