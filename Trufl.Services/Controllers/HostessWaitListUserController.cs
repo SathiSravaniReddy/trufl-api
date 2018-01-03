@@ -200,13 +200,13 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        [Route("UpdateWaitListSeated/{BookingID}/{TableNumbers}")]
+        [Route("UpdateWaitListSeated")]
         [HttpPost]
-        public object UpdateWaitListSeated(int BookingID, string TableNumbers)
+        public object UpdateWaitListSeated(SeatAGuest seatAGuest)
         {
             try
             {
-                bool res = _hostessBL.UpdateWaitListSeated(BookingID, TableNumbers);
+                bool res = _hostessBL.UpdateWaitListSeated(seatAGuest);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

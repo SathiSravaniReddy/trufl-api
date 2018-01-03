@@ -74,6 +74,7 @@
     <Compile Include="SaveRestaurantDTO.cs" />
     <Compile Include="SaveRestaurantGuestDTO.cs" />
     <Compile Include="SaveUserBioEventsDTO.cs" />
+    <Compile Include="SeatAGuest.cs" />
     <Compile Include="SettingsDTO.cs" />
     <Compile Include="SignDTO.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />

@@ -1870,7 +1870,7 @@ namespace Trufl.Data_Access_Layer
         /// <param name="BookingID">Booking ID as Input</param>
         /// <param name="TableNumbers">TableNumbers as Input</param>
         /// <returns>Returns 1 on updating the details or 0 on error</returns>
-        public bool UpdateWaitListSeated(int BookingID, string TableNumbers)
+        public bool UpdateWaitListSeated(SeatAGuest seatAGuest)
         {
             try
             {
@@ -1881,10 +1881,16 @@ namespace Trufl.Data_Access_Layer
                     using (SqlCommand cmd = new SqlCommand("spUpdateWaitListSeated", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BookingID", BookingID);
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BookingID", seatAGuest.BookingID);
                         tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableNumbers", TableNumbers);
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableNumbers", seatAGuest.TableNumbers);
                         tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@TableType1", seatAGuest.TableType1);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@TableType2", seatAGuest.TableType2);
+                        tvpParam3.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@TableType3", seatAGuest.TableType3);
+                        tvpParam4.SqlDbType = SqlDbType.Text;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
