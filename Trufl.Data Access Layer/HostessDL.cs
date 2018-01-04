@@ -1034,11 +1034,15 @@ namespace Trufl.Data_Access_Layer
                         {
                             SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@WaitListTime", DBNull.Value);
                             tvpParam7.SqlDbType = SqlDbType.DateTime;
+                            SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@OfferType", 1);
+                            tvpParam14.SqlDbType = SqlDbType.Int;
                         }
                         else
                         {
                             SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@WaitListTime", SaveRestaurantGuest.WaitListTime);
                             tvpParam7.SqlDbType = SqlDbType.DateTime;
+                            SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@OfferType", 2);
+                            tvpParam14.SqlDbType = SqlDbType.Int;
                         }
                         SqlParameter tvpParam8 = cmd.Parameters.AddWithValue("@Relationship", SaveRestaurantGuest.Relationship);
                         tvpParam8.SqlDbType = SqlDbType.Text;
@@ -1223,12 +1227,14 @@ namespace Trufl.Data_Access_Layer
                         tvpParam10.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@Description", SaveRestaurantGuest.Description);
                         tvpParam11.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@TableType1", SaveRestaurantGuest.TableType1);
+                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@OfferType", SaveRestaurantGuest.OfferType);
                         tvpParam12.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam13 = cmd.Parameters.AddWithValue("@TableType2", SaveRestaurantGuest.TableType2);
+                        SqlParameter tvpParam13 = cmd.Parameters.AddWithValue("@TableType1", SaveRestaurantGuest.TableType1);
                         tvpParam13.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@TableType3", SaveRestaurantGuest.TableType3);
+                        SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@TableType2", SaveRestaurantGuest.TableType2);
                         tvpParam14.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam15 = cmd.Parameters.AddWithValue("@TableType3", SaveRestaurantGuest.TableType3);
+                        tvpParam15.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
