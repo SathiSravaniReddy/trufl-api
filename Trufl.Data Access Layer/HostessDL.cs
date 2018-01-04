@@ -13,6 +13,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 
+
 //using Microsoft.WindowsAzure;
 //using Microsoft.WindowsAzure.Storage;
 //using Microsoft.WindowsAzure.Storage.Blob;
@@ -1307,7 +1308,7 @@ namespace Trufl.Data_Access_Layer
                         tvpParam13.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam14 = cmd.Parameters.AddWithValue("@TableType3", UpdateRestaurantGuest.TableType3);
                         tvpParam14.SqlDbType = SqlDbType.Int;
-
+                       
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
                         pvRetVal.DbType = DbType.Int32;
@@ -1892,11 +1893,11 @@ namespace Trufl.Data_Access_Layer
                         SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableNumbers", seatAGuest.TableNumbers);
                         tvpParam1.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@TableType1", seatAGuest.TableType1);
-                        tvpParam2.SqlDbType = SqlDbType.Text;
+                        tvpParam2.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@TableType2", seatAGuest.TableType2);
-                        tvpParam3.SqlDbType = SqlDbType.Text;
+                        tvpParam3.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@TableType3", seatAGuest.TableType3);
-                        tvpParam4.SqlDbType = SqlDbType.Text;
+                        tvpParam4.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
@@ -3604,54 +3605,54 @@ namespace Trufl.Data_Access_Layer
 
         //    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"].ToString());
 
-        //    CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-        //    CloudFileShare share = fileClient.GetShareReference("hrms");
-        //    CloudFileDirectory root = share.GetRootDirectoryReference();
-        //    CloudFileDirectory dir = root.GetDirectoryReference("resumes");
-        //    dir.CreateIfNotExistsAsync();
-        //    CloudFile cloudfile = dir.GetFileReference(ResumeName);
+            //    CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
+            //    CloudFileShare share = fileClient.GetShareReference("hrms");
+            //    CloudFileDirectory root = share.GetRootDirectoryReference();
+            //    CloudFileDirectory dir = root.GetDirectoryReference("resumes");
+            //    dir.CreateIfNotExistsAsync();
+            //    CloudFile cloudfile = dir.GetFileReference(ResumeName);
 
-        //    cloudfile.FetchAttributes();
+            //    cloudfile.FetchAttributes();
 
-        //    long fileByteLength = cloudfile.Properties.Length;
-        //    Byte[] myByteArray = new Byte[fileByteLength];
+            //    long fileByteLength = cloudfile.Properties.Length;
+            //    Byte[] myByteArray = new Byte[fileByteLength];
 
-        //    cloudfile.DownloadToByteArray(myByteArray, 0);
+            //    cloudfile.DownloadToByteArray(myByteArray, 0);
 
-        //    string text = "";
+            //    string text = "";
 
-        //    text = convertByteToString(myByteArray);
-        //    appdata.ResumeContent = text;
-        //    //return appdata;
+            //    text = convertByteToString(myByteArray);
+            //    appdata.ResumeContent = text;
+            //    //return appdata;
 
-        //    //CloudBlobClient blobClient;
-        //    //const string blobContainerName = "webappstoragedotnet-imagecontainer";
-        //    //CloudBlobContainer blobContainer;
+            //    //CloudBlobClient blobClient;
+            //    //const string blobContainerName = "webappstoragedotnet-imagecontainer";
+            //    //CloudBlobContainer blobContainer;
 
-        //    //// Retrieve storage account information from connection string
-        //    //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
-        //    //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
+            //    //// Retrieve storage account information from connection string
+            //    //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
+            //    //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
 
-        //    //// Create a blob client for interacting with the blob service.
-        //    //blobClient = storageAccount.CreateCloudBlobClient();
-        //    //blobContainer = blobClient.GetContainerReference(blobContainerName);
-        //    //await blobContainer.CreateIfNotExistsAsync();
+            //    //// Create a blob client for interacting with the blob service.
+            //    //blobClient = storageAccount.CreateCloudBlobClient();
+            //    //blobContainer = blobClient.GetContainerReference(blobContainerName);
+            //    //await blobContainer.CreateIfNotExistsAsync();
 
-        //    //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
-        //    //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
-        //    //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
-        //    //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
-        //    //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+            //    //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
+            //    //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
+            //    //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
+            //    //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
+            //    //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-        //    //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
-        //    //List<Uri> allBlobs = new List<Uri>();
-        //    //foreach (IListBlobItem blob in blobContainer.ListBlobs())
-        //    //{
-        //    //    if (blob.GetType() == typeof(CloudBlockBlob))
-        //    //        allBlobs.Add(blob.Uri);
-        //    //}
+            //    //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
+            //    //List<Uri> allBlobs = new List<Uri>();
+            //    //foreach (IListBlobItem blob in blobContainer.ListBlobs())
+            //    //{
+            //    //    if (blob.GetType() == typeof(CloudBlockBlob))
+            //    //        allBlobs.Add(blob.Uri);
+            //    //}
 
-        //    return true;// View(allBlobs);
+            //    return true;// View(allBlobs);
         //}
 
     }
