@@ -1227,7 +1227,7 @@ namespace Trufl.Data_Access_Layer
                         tvpParam10.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@Description", SaveRestaurantGuest.Description);
                         tvpParam11.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@OfferType", SaveRestaurantGuest.OfferType);
+                        SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@OfferType", 1);
                         tvpParam12.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam13 = cmd.Parameters.AddWithValue("@TableType1", SaveRestaurantGuest.TableType1);
                         tvpParam13.SqlDbType = SqlDbType.Int;
