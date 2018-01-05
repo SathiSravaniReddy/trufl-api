@@ -23,8 +23,6 @@ namespace DTO
         public DateTime WaitListTime { get; set; }
         public int BookingStatus { get; set; }
         public string TableNumbers { get; set; }
-        public int TableType1 { get; set; }
-        public int TableType2 { get; set; }
-        public int TableType3 { get; set; }
+        public string SeatedTableType { get; set; }
     }
 }

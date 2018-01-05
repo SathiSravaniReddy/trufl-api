@@ -55,6 +55,7 @@
     <Content Include="obj\Debug\Trufl.Business Layer.pdb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
     <None Include="obj\Debug\Trufl.Business Layer.csproj.CopyComplete" />
     <None Include="obj\Debug\Trufl.Business Layer.csproj.CoreCompileInputs.cache" />

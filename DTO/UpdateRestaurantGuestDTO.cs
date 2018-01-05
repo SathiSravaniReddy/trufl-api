@@ -20,8 +20,6 @@ namespace DTO
         public string Description { get; set; }
         public int BookingID { get; set; }
         public string TableNumbers { get; set; }
-        public int TableType1 { get; set; }
-        public int TableType2 { get; set; }
-        public int TableType3 { get; set; }
+        public string SeatedTableType { get; set; }
     }
 }
