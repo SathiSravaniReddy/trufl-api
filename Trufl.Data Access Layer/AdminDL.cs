@@ -9,6 +9,12 @@ using System.Configuration;
 using DTO;
 using Trufl.Logging;
 
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage.File;
+
 namespace Trufl.Data_Access_Layer
 {
     public class AdminDL
@@ -272,9 +278,9 @@ namespace Trufl.Data_Access_Layer
         /// This method 'GetAllRestaurants ' returns AllRestaurants details
         /// </summary>
         /// <returns>Notifications List</returns>
-        public DataTable GetAllRestaurants(int ID, string QType)
+        public DataSet GetAllRestaurants(int ID, string QType)
         {
-            DataTable sendResponse = new DataTable();
+            DataSet sendResponse = new DataSet();
             try
             {
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
@@ -293,9 +299,17 @@ namespace Trufl.Data_Access_Layer
                         {
                             da.Fill(sendResponse);
                         }
-
                     }
                 }
+                DataTable dt_MealTiming = new DataTable();
+                if (QType == "REST")
+                {
+                    dt_MealTiming = CalcMealTime(ID);
+                    sendResponse.Tables.Add(dt_MealTiming);
+                    sendResponse.Tables[0].TableName = "RestaurantDetails";
+                    sendResponse.Tables[1].TableName = "RestaurantMealTimings";
+                }
+
             }
             catch (Exception ex)
             {
@@ -303,6 +317,122 @@ namespace Trufl.Data_Access_Layer
                 throw ex;
             }
             return sendResponse;
+        }
+
+        public DataSet GetRestaurantMealTimings(int RestaurantID)
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetRestaurantMealTimings", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                        dsResponse.Tables[0].TableName = "MealTiming";
+                        dsResponse.Tables[1].TableName = "MealType";
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
+        public DataTable CalcMealTime(int RestaurantID)
+        {
+            DataSet dsMealTiming;
+            DateTime MealStartTime, MealEndTime;
+            int sDay, eDay, MealID;
+            string strDay, MealType, From, To;
+            bool blMealType;
+
+            var dtMeal = new DataTable();
+            dtMeal.Columns.Add("MealTime", typeof(string));
+
+            try
+            {
+                dsMealTiming = GetRestaurantMealTimings(RestaurantID);
+
+                foreach (DataRow drMealType in dsMealTiming.Tables["MealType"].Rows)
+                {
+                    MealID = Convert.ToInt16(drMealType["MealID"]);
+                    MealType = Convert.ToString(drMealType["MealType"]);
+                    blMealType = false;
+
+                    DataView dv = new DataView(dsMealTiming.Tables["MealTiming"]);
+                    dv.RowFilter = "MealID = " + MealID;
+                    dv.Sort = "MealStartTime, MealEndTime";
+                    if (dv.Count > 0)
+                    {
+                        MealStartTime = Convert.ToDateTime(dv[0]["MealStartTime"]);
+                        MealEndTime = Convert.ToDateTime(dv[0]["MealEndTime"]);
+                        sDay = Convert.ToInt16(dv[0]["Day"]);
+                        eDay = Convert.ToInt16(dv[0]["Day"]);
+
+                        foreach (DataRowView drv in dv)
+                        {
+                            if ((Convert.ToDateTime(drv["MealStartTime"]) != MealStartTime) || (Convert.ToDateTime(drv["MealEndTime"]) != MealEndTime))
+                            {
+                                From = ((DayOfWeek)(sDay % 7)).ToString();
+                                if (sDay == eDay)
+                                    To = "";
+                                else
+                                    To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
+
+                                if (blMealType)
+                                    strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                else
+                                {
+                                    strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                    blMealType = true;
+                                }
+
+                                dtMeal.Rows.Add(strDay);
+                                MealStartTime = Convert.ToDateTime(drv["MealStartTime"]);
+                                MealEndTime = Convert.ToDateTime(drv["MealEndTime"]);
+                                sDay = Convert.ToInt16(drv["Day"]);
+                                eDay = Convert.ToInt16(drv["Day"]);
+                            }
+                            else
+                            {
+                                eDay = Convert.ToInt16(drv["Day"]);
+                            }
+                        }
+                        From = ((DayOfWeek)(sDay % 7)).ToString();
+                        if (sDay == eDay)
+                            To = "";
+                        else
+                            To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
+
+                        if (blMealType)
+                            strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        else
+                        {
+                            strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                            blMealType = true;
+                        }
+
+                        dtMeal.Rows.Add(strDay);
+                    }
+                }
+                return dtMeal;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -449,6 +579,67 @@ namespace Trufl.Data_Access_Layer
 
         #endregion
 
-       
+        public bool GetImages(int RestaurantID)
+        {
+
+            //string appdata = "https://truflimages.blob.core.windows.net/images/download.jpg";
+
+            string imageName = "download.jpg";
+
+            //string ImagePath = "https://truflimages.blob.core.windows.net/images/";
+
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"].ToString());
+
+            CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
+            CloudFileShare share = fileClient.GetShareReference("hrms");
+            CloudFileDirectory root = share.GetRootDirectoryReference();
+            CloudFileDirectory dir = root.GetDirectoryReference(RestaurantID.ToString());
+            dir.CreateIfNotExistsAsync();
+            CloudFile cloudfile = dir.GetFileReference(imageName);
+
+            cloudfile.FetchAttributes();
+
+            long fileByteLength = cloudfile.Properties.Length;
+            Byte[] myByteArray = new Byte[fileByteLength];
+
+            cloudfile.DownloadToByteArray(myByteArray, 0);
+
+            //string text = "";
+
+
+
+            //text = convertByteToString(myByteArray);
+            ////return appdata;
+
+            //CloudBlobClient blobClient;
+            //const string blobContainerName = "webappstoragedotnet-imagecontainer";
+            //CloudBlobContainer blobContainer;
+
+            //// Retrieve storage account information from connection string
+            //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
+            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
+
+            //// Create a blob client for interacting with the blob service.
+            //blobClient = storageAccount.CreateCloudBlobClient();
+            //blobContainer = blobClient.GetContainerReference(blobContainerName);
+            //await blobContainer.CreateIfNotExistsAsync();
+
+            //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
+            //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
+            //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
+            //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
+            //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
+
+            //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
+            //List<Uri> allBlobs = new List<Uri>();
+            //foreach (IListBlobItem blob in blobContainer.ListBlobs())
+            //{
+            //    if (blob.GetType() == typeof(CloudBlockBlob))
+            //        allBlobs.Add(blob.Uri);
+            //}
+
+            return true;// View(allBlobs);
+        }
+
     }
 }

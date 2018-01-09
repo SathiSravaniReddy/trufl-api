@@ -44,7 +44,7 @@ namespace Trufl.Services.Controllers
         [HttpPost]
         public object GetAllRestaurants(int ID, string QType)
         {
-            DataTable res = new DataTable();
+            DataSet res = new DataSet();
             try
             {
             res = _adminBL.GetAllRestaurants(ID, QType);

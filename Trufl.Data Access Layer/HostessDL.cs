@@ -13,13 +13,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 
-
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage.File;
-
 namespace Trufl.Data_Access_Layer
 {
     public class HostessDL
@@ -3291,9 +3284,10 @@ namespace Trufl.Data_Access_Layer
         {
             try
             {
-                int TotalRewardsPoints = 0, RewardsCalc = 0, Membership = 0;
+                int TotalRewardsPoints = 0, RewardsCalc = 0, RestMembership = 0;
                 int TotalTruflRewardsPoints = 0, TruflRewardsCalc = 0, TruflMembership = 0, TruflBonusPer=0, TruflCashBack = 0;
-                bool isWinBid = false, isCashbask = false;
+                int RewardTypeID = 0;
+                bool isWinBid = false;
                 string OperationType, TruflOperationType;
 
                 DataSet dsUserRewards = GetRestaurantRewards(restaurantRewards.TruflUserID, restaurantRewards.RestaurantID);
@@ -3301,7 +3295,7 @@ namespace Trufl.Data_Access_Layer
                 if (dsUserRewards.Tables[0].Rows.Count >= 1)
                 {
                     OperationType = "UPDATE";
-                    Membership = Convert.ToInt16(dsUserRewards.Tables[0].Rows[0]["MembershipTypeID"]);
+                    RestMembership = Convert.ToInt16(dsUserRewards.Tables[0].Rows[0]["MembershipTypeID"]);
                     TotalRewardsPoints = Convert.ToInt16(dsUserRewards.Tables[0].Rows[0]["RewardPoints"]);
                     isWinBid = Convert.ToBoolean(dsUserRewards.Tables[0].Rows[0]["IsWinBid"]);
                 }
@@ -3313,35 +3307,31 @@ namespace Trufl.Data_Access_Layer
                     TruflOperationType = "UPDATE";
                     TruflMembership = Convert.ToInt16(dsUserRewards.Tables[1].Rows[0]["MembershipTypeID"]);
                     TotalTruflRewardsPoints = Convert.ToInt32(dsUserRewards.Tables[1].Rows[0]["RewardPoints"]);
-                   
                 }
                 else
                     TruflOperationType = "INSERT";
 
-
                 switch (restaurantRewards.RewardType.ToUpper())
                 {
                     case "AUCTION":
+                        RewardTypeID = 1;
                         RewardsCalc = 25;
-                        break; 
+                        break;
                     case "WIN_AUCTION":
                         if (!isWinBid)
                         {
+                            RewardTypeID = 2;
                             RewardsCalc = 100;
                             isWinBid = true;
                         }
                         break;
-                    case "INVITE":
-                        //RewardsCalc = 500;
-                        break;
-                    case "GIFT":
-                        RewardsCalc = 5000;
-                        break;
+
                     case "SEATED":
+                        RewardTypeID = 3;
                         RewardsCalc = 25;
                         break;
                     case "BILL_AMOUNT":
-                        isCashbask = true;
+                        RewardTypeID = 4;
                         if (restaurantRewards.BillAmount < 100)
                             RewardsCalc = 0;
                         else if (restaurantRewards.BillAmount < 250)
@@ -3353,6 +3343,14 @@ namespace Trufl.Data_Access_Layer
                         else
                             RewardsCalc = 4000;
                         break;
+                    case "INVITE":
+                        RewardTypeID = 5;
+                        RewardsCalc = 500;
+                        break;
+                    case "GIFT":
+                        RewardTypeID = 6;
+                        RewardsCalc = 5000;
+                        break;
                 }
                 TotalRewardsPoints += RewardsCalc;
 
@@ -3362,7 +3360,7 @@ namespace Trufl.Data_Access_Layer
                 foreach(DataRowView drv in dv)
                     if (TotalTruflRewardsPoints >= Convert.ToInt16(drv["Points"]))
                     {
-                        Membership = Convert.ToInt16(drv["MembershipTypeID"]);
+                        RestMembership = Convert.ToInt16(drv["MembershipTypeID"]);
                     }
 
                 dv.RowFilter = "MembershipCode = 'T'";
@@ -3372,83 +3370,63 @@ namespace Trufl.Data_Access_Layer
                     {
                         TruflMembership = Convert.ToInt32(drv["MembershipTypeID"]);
                         TruflBonusPer = Convert.ToInt32(drv["BonusPointsPer"]);
-                        if (isCashbask)
+                        if (RewardTypeID == 4)
                             TruflCashBack = Convert.ToInt32(drv["TruflDiscount"]);
                     }
                 TruflRewardsCalc = RewardsCalc + Convert.ToInt32((RewardsCalc * TruflBonusPer) / 100);
                 TotalTruflRewardsPoints += TruflRewardsCalc;
-
-                using (SqlConnection con = new SqlConnection(connectionString))
+                int status = 1;
+                if (RewardTypeID > 0)
                 {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spSaveRestaurantRewards", con))
+                    using (SqlConnection con = new SqlConnection(connectionString))
                     {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", restaurantRewards.TruflUserID);
-                        tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", restaurantRewards.RestaurantID);
-                        tvpParam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@MembershipTypeID", Membership);
-                        tvpParam2.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RewardPoints", TotalRewardsPoints);
-                        tvpParam3.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsWinBid", isWinBid);
-                        tvpParam4.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", OperationType);
-                        tvpParam5.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflCashBack", 0);
-                        tvpParam6.SqlDbType = SqlDbType.Int;
-
-                        SqlParameter pvNewId = new SqlParameter();
-                        pvNewId.ParameterName = "@RetVal";
-                        pvNewId.DbType = DbType.Int32;
-                        pvNewId.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(pvNewId);
-
-                        int status = cmd.ExecuteNonQuery();
-                        if (status == 0)
+                        con.Open();
+                        using (SqlCommand cmd = new SqlCommand("spSaveRestaurantRewards", con))
                         {
-                            //return false;
-                        }
-                        else
-                        {
-                            //return true;
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", restaurantRewards.TruflUserID);
+                            tvpParam.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", restaurantRewards.RestaurantID);
+                            tvpParam1.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@RestaurantMembershipID", RestMembership);
+                            tvpParam2.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RestaurantRewardPoints", RewardsCalc);
+                            tvpParam3.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsWinBid", isWinBid);
+                            tvpParam4.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", OperationType);
+                            tvpParam5.SqlDbType = SqlDbType.Text;
+                            SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflCashBack", TruflCashBack);
+                            tvpParam6.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@TruflMemberShipID", TruflMembership);
+                            tvpParam7.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam8 = cmd.Parameters.AddWithValue("@TruflRewardPoints", TruflRewardsCalc);
+                            tvpParam8.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam9 = cmd.Parameters.AddWithValue("@RewardTypeID", RewardTypeID);
+                            tvpParam9.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam10 = cmd.Parameters.AddWithValue("@BillAmount", restaurantRewards.BillAmount);
+                            tvpParam10.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@TruflOperationType", TruflOperationType);
+                            tvpParam11.SqlDbType = SqlDbType.Text;
+
+                            SqlParameter pvNewId = new SqlParameter();
+                            pvNewId.ParameterName = "@RetVal";
+                            pvNewId.DbType = DbType.Int32;
+                            pvNewId.Direction = ParameterDirection.Output;
+                            cmd.Parameters.Add(pvNewId);
+
+                            status = cmd.ExecuteNonQuery();
+                           
                         }
                     }
-
-                    using (SqlCommand cmd = new SqlCommand("spSaveRestaurantRewards", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", restaurantRewards.TruflUserID);
-                        tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", 0);
-                        tvpParam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@MembershipTypeID", TruflMembership);
-                        tvpParam2.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@RewardPoints", TotalTruflRewardsPoints);
-                        tvpParam3.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsWinBid", 0);
-                        tvpParam4.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@OperationType", TruflOperationType);
-                        tvpParam5.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflCashBack", TruflCashBack);
-                        tvpParam6.SqlDbType = SqlDbType.Int;
-                        SqlParameter pvNewId = new SqlParameter();
-                        pvNewId.ParameterName = "@RetVal";
-                        pvNewId.DbType = DbType.Int32;
-                        pvNewId.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(pvNewId);
-
-                        int status = cmd.ExecuteNonQuery();
-                        if (status == 0)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
-                    }
+                }
+                if (status == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -3457,185 +3435,7 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
-        public DataSet GetRestaurantMealTimings(int RestaurantID)
-        {
-            DataSet dsResponse = new DataSet();
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spGetRestaurantMealTimings", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
-                        tvpParam.SqlDbType = SqlDbType.Int;
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            da.Fill(dsResponse);
-                        }
-                        dsResponse.Tables[0].TableName = "MealTiming";
-                        dsResponse.Tables[1].TableName = "MealType";
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return dsResponse;
-        }
-
-        public DataTable CalcMealTime(int RestaurantID)
-        {
-            DataSet dsMealTiming;
-            DateTime MealStartTime, MealEndTime;
-            int sDay, eDay, MealID;
-            string strDay, MealType, From, To;
-            bool blMealType;
-
-            var dtMeal = new DataTable();
-            //dtMeal.Columns.Add("MealType", typeof(string));
-            dtMeal.Columns.Add("MealTime", typeof(string));
-
-            try
-            {
-                dsMealTiming = GetRestaurantMealTimings(RestaurantID);
-
-                foreach (DataRow drMealType in dsMealTiming.Tables["MealType"].Rows)
-                {
-                    MealID = Convert.ToInt16(drMealType["MealID"]);
-                    MealType = Convert.ToString(drMealType["MealType"]);
-                    blMealType = false;
-
-                    DataView dv = new DataView(dsMealTiming.Tables["MealTiming"]);
-                    dv.RowFilter = "MealID = " + MealID;
-                    dv.Sort = "MealStartTime, MealEndTime";
-                    if (dv.Count > 0)
-                    {
-                        MealStartTime = Convert.ToDateTime(dv[0]["MealStartTime"]);
-                        MealEndTime = Convert.ToDateTime(dv[0]["MealEndTime"]);
-                        sDay = Convert.ToInt16(dv[0]["Day"]);
-                        eDay = Convert.ToInt16(dv[0]["Day"]);
-
-                        foreach (DataRowView drv in dv)
-                        {
-                            if ((Convert.ToDateTime(drv["MealStartTime"]) != MealStartTime) || (Convert.ToDateTime(drv["MealEndTime"]) != MealEndTime))
-                            {
-                                From = ((DayOfWeek)(sDay % 7)).ToString();
-                                if (sDay == eDay)
-                                    To = "";
-                                else
-                                    To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
-                                //strDay = From + To + " : " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-
-                                if (blMealType)
-                                    strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                                else
-                                {
-                                    strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                                    blMealType = true;
-                                }
-
-                                dtMeal.Rows.Add(strDay);
-                                MealStartTime = Convert.ToDateTime(drv["MealStartTime"]);
-                                MealEndTime = Convert.ToDateTime(drv["MealEndTime"]);
-                                sDay = Convert.ToInt16(drv["Day"]);
-                                eDay = Convert.ToInt16(drv["Day"]);
-                            }
-                            else
-                            {
-                                eDay = Convert.ToInt16(drv["Day"]);
-                            }
-                        }
-                        From = ((DayOfWeek)(sDay % 7)).ToString();
-                        if (sDay == eDay)
-                            To = "";
-                        else
-                            To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
-
-                        //strDay = From + To + " : " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                        if (blMealType)
-                            strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                        else
-                        {
-                            strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                            blMealType = true;
-                        }
-
-                        dtMeal.Rows.Add(strDay);
-                    }
-                }
-                return dtMeal;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
         #endregion
-
-        public bool GetImages(int RestaurantID)
-        {
-
-            //string appdata = "https://truflimages.blob.core.windows.net/images/download.jpg";
-
-            string imageName = "download.jpg";
-
-            string ImagePath = "https://truflimages.blob.core.windows.net/images/";
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"].ToString());
-
-            CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-            CloudFileShare share = fileClient.GetShareReference("hrms");
-            CloudFileDirectory root = share.GetRootDirectoryReference();
-            CloudFileDirectory dir = root.GetDirectoryReference(RestaurantID.ToString());
-            dir.CreateIfNotExistsAsync();
-            CloudFile cloudfile = dir.GetFileReference(imageName);
-
-            cloudfile.FetchAttributes();
-
-            long fileByteLength = cloudfile.Properties.Length;
-            Byte[] myByteArray = new Byte[fileByteLength];
-
-            cloudfile.DownloadToByteArray(myByteArray, 0);
-
-            string text = "";
-
-            //text = convertByteToString(myByteArray);
-            ////return appdata;
-
-            //CloudBlobClient blobClient;
-            //const string blobContainerName = "webappstoragedotnet-imagecontainer";
-            //CloudBlobContainer blobContainer;
-
-            //// Retrieve storage account information from connection string
-            //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
-            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
-
-            //// Create a blob client for interacting with the blob service.
-            //blobClient = storageAccount.CreateCloudBlobClient();
-            //blobContainer = blobClient.GetContainerReference(blobContainerName);
-            //await blobContainer.CreateIfNotExistsAsync();
-
-            //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
-            //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
-            //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
-            //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
-            //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-
-            //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
-            //List<Uri> allBlobs = new List<Uri>();
-            //foreach (IListBlobItem blob in blobContainer.ListBlobs())
-            //{
-            //    if (blob.GetType() == typeof(CloudBlockBlob))
-            //        allBlobs.Add(blob.Uri);
-            //}
-
-            return true;// View(allBlobs);
-        }
-
+               
     }
 }
