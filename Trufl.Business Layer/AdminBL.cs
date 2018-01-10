@@ -67,7 +67,7 @@ namespace Trufl.Business_Layer
         }
 
         #endregion
-        public DataTable GetRestaurantImageUrls(int RestaurantID)
+        public DataSet GetRestaurantImageUrls(int RestaurantID)
         {
             return _adminDL.GetRestaurantImageUrls(RestaurantID);
         }

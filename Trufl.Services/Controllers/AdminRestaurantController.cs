@@ -91,7 +91,7 @@ namespace Trufl.Services.Controllers
         [HttpGet]
         public object GetRestaurantImageUrls(int RestaurantID)
         {
-            DataTable res = new DataTable();
+            DataSet res = new DataSet();
             try
             {
                 res = _adminBL.GetRestaurantImageUrls(RestaurantID);

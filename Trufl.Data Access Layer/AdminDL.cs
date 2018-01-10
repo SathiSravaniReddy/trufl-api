@@ -303,7 +303,7 @@ namespace Trufl.Data_Access_Layer
                 }
 
                 DataTable dt_MealTiming = new DataTable();
-                DataTable dt_ImageUrl = new DataTable();
+                DataSet ds_ImageUrl = new DataSet();
                 if (QType.ToUpper() == "ALL")
                     sendResponse.Tables[0].TableName = "AllRestaurants";
 
@@ -313,10 +313,13 @@ namespace Trufl.Data_Access_Layer
                 else if (QType.ToUpper() == "REST")
                     {
                     dt_MealTiming = CalcMealTime(ID);
-                    dt_ImageUrl = GetRestaurantImageUrls(ID);
-
+                    ds_ImageUrl = GetRestaurantImageUrls(ID);
+                    if (ds_ImageUrl.Tables[0].Rows.Count >0)
+                    {
+                        sendResponse.Tables[0].Rows[0]["Image_Url"] = ds_ImageUrl.Tables[0].Rows[0]["MainLogo"];
+                    }
                     sendResponse.Tables.Add(dt_MealTiming);
-                    sendResponse.Tables.Add(dt_ImageUrl);
+                    sendResponse.Tables.Add(ds_ImageUrl.Tables[1].Copy());
                     sendResponse.Tables[0].TableName = "RestaurantDetails";
                     sendResponse.Tables[1].TableName = "RestaurantMealTimings";
                     sendResponse.Tables[2].TableName = "RestaurantImageUrls";
@@ -591,11 +594,14 @@ namespace Trufl.Data_Access_Layer
 
         #endregion
 
-        public DataTable GetRestaurantImageUrls(int RestaurantID)
+        public DataSet GetRestaurantImageUrls(int RestaurantID)
         {
+            DataSet dsImageUrls = new DataSet();
+            var dtRestImageUri = new DataTable();
+            dtRestImageUri.Columns.Add("ImageUri", typeof(string));
 
-            var dtImageUri = new DataTable();
-            dtImageUri.Columns.Add("ImageUri", typeof(string));
+            var dtMainLogo = new DataTable();
+            dtMainLogo.Columns.Add("MainLogo", typeof(string));
 
             string key = ConfigurationManager.AppSettings["StorageConnectionString"].ToString();
             string blobcontainerName = ConfigurationManager.AppSettings["blobContainerName"].ToString();
@@ -620,13 +626,17 @@ namespace Trufl.Data_Access_Layer
                 if (item.GetType() == typeof(CloudBlockBlob))
                 {
                     CloudBlockBlob blob = (CloudBlockBlob)item;
-                        dtImageUri.Rows.Add(blob.Uri);
+                    if (blob.Name.ToUpper() == blobDirectoryName + RestaurantID.ToString() + "/MAINLOGO.JPG")
+                        dtMainLogo.Rows.Add(blob.Uri);
+                    else
+                        dtRestImageUri.Rows.Add(blob.Uri);
                     //allBlobs.Add(blob.Uri);
                 }
             }
+            dsImageUrls.Tables.Add(dtMainLogo);
+            dsImageUrls.Tables.Add(dtRestImageUri);
 
-
-            return dtImageUri;// View(allBlobs);
+            return dsImageUrls;// View(allBlobs);
         }
 
     }
