@@ -301,13 +301,25 @@ namespace Trufl.Data_Access_Layer
                         }
                     }
                 }
+
                 DataTable dt_MealTiming = new DataTable();
-                if (QType == "REST")
-                {
+                DataTable dt_ImageUrl = new DataTable();
+                if (QType.ToUpper() == "ALL")
+                    sendResponse.Tables[0].TableName = "AllRestaurants";
+
+                else if (QType.ToUpper() == "USER")
+                    sendResponse.Tables[0].TableName = "UserRestaurants";
+
+                else if (QType.ToUpper() == "REST")
+                    {
                     dt_MealTiming = CalcMealTime(ID);
+                    dt_ImageUrl = GetRestaurantImageUrls(ID);
+
                     sendResponse.Tables.Add(dt_MealTiming);
+                    sendResponse.Tables.Add(dt_ImageUrl);
                     sendResponse.Tables[0].TableName = "RestaurantDetails";
                     sendResponse.Tables[1].TableName = "RestaurantMealTimings";
+                    sendResponse.Tables[2].TableName = "RestaurantImageUrls";
                 }
 
             }
@@ -579,66 +591,42 @@ namespace Trufl.Data_Access_Layer
 
         #endregion
 
-        public bool GetImages(int RestaurantID)
+        public DataTable GetRestaurantImageUrls(int RestaurantID)
         {
 
-            //string appdata = "https://truflimages.blob.core.windows.net/images/download.jpg";
+            var dtImageUri = new DataTable();
+            dtImageUri.Columns.Add("ImageUri", typeof(string));
 
-            string imageName = "download.jpg";
+            string key = ConfigurationManager.AppSettings["StorageConnectionString"].ToString();
+            string blobcontainerName = ConfigurationManager.AppSettings["blobContainerName"].ToString();
+            string blobDirectoryName = ConfigurationManager.AppSettings["blobDirectoryName"].ToString();
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(key);
 
-            //string ImagePath = "https://truflimages.blob.core.windows.net/images/";
-
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"].ToString());
-
-            CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-            CloudFileShare share = fileClient.GetShareReference("hrms");
-            CloudFileDirectory root = share.GetRootDirectoryReference();
-            CloudFileDirectory dir = root.GetDirectoryReference(RestaurantID.ToString());
-            dir.CreateIfNotExistsAsync();
-            CloudFile cloudfile = dir.GetFileReference(imageName);
-
-            cloudfile.FetchAttributes();
-
-            long fileByteLength = cloudfile.Properties.Length;
-            Byte[] myByteArray = new Byte[fileByteLength];
-
-            cloudfile.DownloadToByteArray(myByteArray, 0);
-
-            //string text = "";
-
-
-
-            //text = convertByteToString(myByteArray);
-            ////return appdata;
-
-            //CloudBlobClient blobClient;
-            //const string blobContainerName = "webappstoragedotnet-imagecontainer";
-            //CloudBlobContainer blobContainer;
-
-            //// Retrieve storage account information from connection string
-            //// How to create a storage connection string - http://msdn.microsoft.com/en-us/library/azure/ee758697.aspx
-            //CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("StorageConnectionString"));
-
-            //// Create a blob client for interacting with the blob service.
-            //blobClient = storageAccount.CreateCloudBlobClient();
-            //blobContainer = blobClient.GetContainerReference(blobContainerName);
-            //await blobContainer.CreateIfNotExistsAsync();
-
-            //// To view the uploaded blob in a browser, you have two options. The first option is to use a Shared Access Signature (SAS) token to delegate  
-            //// access to the resource. See the documentation links at the top for more information on SAS. The second approach is to set permissions  
-            //// to allow public access to blobs in this container. Comment the line below to not use this approach and to use SAS. Then you can view the image  
-            //// using: https://[InsertYourStorageAccountNameHere].blob.core.windows.net/webappstoragedotnet-imagecontainer/FileName 
-            //await blobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
-
-            //// Gets all Cloud Block Blobs in the blobContainerName and passes them to teh view
-            //List<Uri> allBlobs = new List<Uri>();
-            //foreach (IListBlobItem blob in blobContainer.ListBlobs())
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            CloudBlobContainer blobcontainer = blobClient.GetContainerReference(blobcontainerName);
+            //foreach (IListBlobItem item in blobcontainer.ListBlobs(null, false))
             //{
-            //    if (blob.GetType() == typeof(CloudBlockBlob))
-            //        allBlobs.Add(blob.Uri);
+            //    if (item.GetType() == typeof(CloudBlockBlob))
+            //    {
+            //        CloudBlockBlob blob = (CloudBlockBlob)item;
+            //        MessageBox.Show("Block blob of length " + blob.Properties.Length + ":" + blob.Uri);
+            //    }
             //}
 
-            return true;// View(allBlobs);
+            CloudBlobDirectory blobDirectory = blobcontainer.GetDirectoryReference(blobDirectoryName + RestaurantID.ToString());
+            //List<Uri> allBlobs = new List<Uri>();
+            foreach (IListBlobItem item in blobDirectory.ListBlobs(true, BlobListingDetails.All, null))
+            {
+                if (item.GetType() == typeof(CloudBlockBlob))
+                {
+                    CloudBlockBlob blob = (CloudBlockBlob)item;
+                        dtImageUri.Rows.Add(blob.Uri);
+                    //allBlobs.Add(blob.Uri);
+                }
+            }
+
+
+            return dtImageUri;// View(allBlobs);
         }
 
     }
