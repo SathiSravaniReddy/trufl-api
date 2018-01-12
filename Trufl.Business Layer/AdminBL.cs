@@ -57,14 +57,20 @@ namespace Trufl.Business_Layer
             return _adminDL.GetRestaurantSettings(RestaurantID);
         }
 
-        #endregion
-
-        #region TruflAdminLoginController
-
         public bool SaveProfilePassword(RestPasswordDTO ProfilePassword)
         {
             return _adminDL.SaveProfilePassword(ProfilePassword);
         }
+        #endregion
+
+        #region TruflAdminLoginController
+
+        public bool UpdateUserFavoriteRestaurants(int TruflUserID, string FavRestaurant)
+        {
+            return _adminDL.UpdateUserFavoriteRestaurants(TruflUserID, FavRestaurant);
+        }
+
+        
 
         #endregion
         public DataSet GetRestaurantImageUrls(int RestaurantID)

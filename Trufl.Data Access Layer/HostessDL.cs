@@ -617,20 +617,18 @@ namespace Trufl.Data_Access_Layer
                     using (SqlCommand cmd = new SqlCommand("spSaveUserBioEvents", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", saveUserBioEvents.RestaurantID);
-                        tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", saveUserBioEvents.TruflUserID);
-                        tvparam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@Relationship", saveUserBioEvents.Relationship);
+                         SqlParameter tvparam = cmd.Parameters.AddWithValue("@TruflUserID", saveUserBioEvents.TruflUserID);
+                        tvparam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@Relationship", saveUserBioEvents.Relationship);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@ThisVisit", saveUserBioEvents.ThisVisit);
                         tvpParam2.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@ThisVisit", saveUserBioEvents.ThisVisit);
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@FoodAndDrink", saveUserBioEvents.FoodAndDrink);
                         tvpParam3.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@FoodAndDrink", saveUserBioEvents.FoodAndDrink);
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@SeatingPreferences", saveUserBioEvents.SeatingPreferences);
                         tvpParam4.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@SeatingPreferences", saveUserBioEvents.SeatingPreferences);
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@Description", saveUserBioEvents.Description);
                         tvpParam5.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@Description", saveUserBioEvents.Description);
-                        tvpParam6.SqlDbType = SqlDbType.Text;
 
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";

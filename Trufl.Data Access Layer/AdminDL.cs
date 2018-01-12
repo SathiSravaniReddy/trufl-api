@@ -312,19 +312,25 @@ namespace Trufl.Data_Access_Layer
 
                 else if (QType.ToUpper() == "REST")
                     {
+
                     dt_MealTiming = CalcMealTime(ID);
-                    ds_ImageUrl = GetRestaurantImageUrls(ID);
-                    if (ds_ImageUrl.Tables[0].Rows.Count >0)
-                    {
-                        sendResponse.Tables[0].Rows[0]["Image_Url"] = ds_ImageUrl.Tables[0].Rows[0]["MainLogo"];
-                    }
+                    //if (dsReturnRestDetails.Tables["OpenUntil"].Rows.Count > 0)
+                    //{
+                    //    sendResponse.Tables[0].Rows[0]["OpenUntil"] = dsReturnRestDetails.Tables[0].Rows[0]["OpenUntil"];
+                    //}
                     sendResponse.Tables.Add(dt_MealTiming);
-                    sendResponse.Tables.Add(ds_ImageUrl.Tables[1].Copy());
+
+                    ds_ImageUrl = GetRestaurantImageUrls(ID);
+
+                    if (ds_ImageUrl.Tables["MainLogo"].Rows.Count >0)
+                    {
+                        sendResponse.Tables[0].Rows[0]["Image_Url"] = ds_ImageUrl.Tables["MainLogo"].Rows[0]["MainLogo"];
+                    }
+                    sendResponse.Tables.Add(ds_ImageUrl.Tables["RestImageUri"].Copy());
                     sendResponse.Tables[0].TableName = "RestaurantDetails";
                     sendResponse.Tables[1].TableName = "RestaurantMealTimings";
                     sendResponse.Tables[2].TableName = "RestaurantImageUrls";
                 }
-
             }
             catch (Exception ex)
             {
@@ -373,13 +379,13 @@ namespace Trufl.Data_Access_Layer
             string strDay, MealType, From, To;
             bool blMealType;
 
-            var dtMeal = new DataTable();
+            DataTable dtMeal = new DataTable();
             dtMeal.Columns.Add("MealTime", typeof(string));
 
+            //ToDay = Convert.ToInt16(DateTime.Now.DayOfWeek);
             try
             {
                 dsMealTiming = GetRestaurantMealTimings(RestaurantID);
-
                 foreach (DataRow drMealType in dsMealTiming.Tables["MealType"].Rows)
                 {
                     MealID = Convert.ToInt16(drMealType["MealID"]);
@@ -424,6 +430,11 @@ namespace Trufl.Data_Access_Layer
                             {
                                 eDay = Convert.ToInt16(drv["Day"]);
                             }
+                            //if ((MealID == 3) && (ToDay == eDay))
+                            //{
+                            //    OpenUntil = MealEndTime.ToShortTimeString();
+                            //    dtMeal.Rows.Add(OpenUntil);
+                            //}
                         }
                         From = ((DayOfWeek)(sDay % 7)).ToString();
                         if (sDay == eDay)
@@ -442,6 +453,7 @@ namespace Trufl.Data_Access_Layer
                         dtMeal.Rows.Add(strDay);
                     }
                 }
+                dtMeal.TableName = "Meal";
                 return dtMeal;
             }
             catch (Exception ex)
@@ -594,6 +606,42 @@ namespace Trufl.Data_Access_Layer
 
         #endregion
 
+        public bool UpdateUserFavoriteRestaurants(int TruflUserID, string FavRestaurant)
+        {
+            DataTable sendResponse = new DataTable();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spUpdateUserFavoriteRestaurants", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@FavRestaurant", FavRestaurant);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == -1)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
         public DataSet GetRestaurantImageUrls(int RestaurantID)
         {
             DataSet dsImageUrls = new DataSet();
@@ -635,7 +683,8 @@ namespace Trufl.Data_Access_Layer
             }
             dsImageUrls.Tables.Add(dtMainLogo);
             dsImageUrls.Tables.Add(dtRestImageUri);
-
+            dsImageUrls.Tables[0].TableName = "MainLogo";
+            dsImageUrls.Tables[1].TableName = "RestImageUri";
             return dsImageUrls;// View(allBlobs);
         }
 

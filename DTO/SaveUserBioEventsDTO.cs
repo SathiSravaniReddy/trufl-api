@@ -8,7 +8,6 @@ namespace DTO
 {
     public class SaveUserBioEventsDTO
     {
-        public int RestaurantID { get; set; }
         public int TruflUserID { get; set; }
         public string Relationship { get; set; }
         public string ThisVisit { get; set; }
