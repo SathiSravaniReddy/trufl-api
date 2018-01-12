@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BookingTableDTO.cs" />
+    <Compile Include="CustomerRewards.cs" />
     <Compile Include="DashBoardDetailsDTO.cs" />
     <Compile Include="DashBoardDTO.cs" />
     <Compile Include="EmployeeConfigDTO.cs" />
