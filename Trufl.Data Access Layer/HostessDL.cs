@@ -1568,18 +1568,10 @@ namespace Trufl.Data_Access_Layer
                 dtClient.Columns.Add("PartySize", typeof(Int32));
                 dtClient.Columns.Add("OfferType", typeof(Int32));
                 dtClient.Columns.Add("OfferAmount", typeof(Int32));
+                dtClient.Columns.Add("Quoted", typeof(Int32));
                 dtClient.Columns.Add("BookingStatus", typeof(Int32));
-                dtClient.Columns.Add("Points", typeof(Int32));
                 dtClient.Columns.Add("TruflUserCardDataID", typeof(Int32));
                 dtClient.Columns.Add("TruflTCID", typeof(Int32));
-                dtClient.Columns.Add("ModifiedDate", typeof(DateTime));
-                dtClient.Columns.Add("ModifiedBy", typeof(Int32));
-                dtClient.Columns.Add("Quoted", typeof(Int32));
-                dtClient.Columns.Add("PaymentStatus", typeof(string));
-                dtClient.Columns.Add("TableNumbers", typeof(string));
-                dtClient.Columns.Add("WaitListTime", typeof(DateTime));
-                dtClient.Columns.Add("SeatedTime", typeof(DateTime));
-
 
                 dtClient.Rows.Add(bookingTableInput.BookingID,
                                    bookingTableInput.TruflUserID,
@@ -1587,19 +1579,11 @@ namespace Trufl.Data_Access_Layer
                                    bookingTableInput.PartySize,
                                    bookingTableInput.OfferType,
                                    bookingTableInput.OfferAmount,
-                                   bookingTableInput.BookingStatus,
-                                   bookingTableInput.Points,
-                                   bookingTableInput.TruflUserCardDataID,
-                                   bookingTableInput.TruflTCID,
-                                   bookingTableInput.ModifiedDate,
-                                   bookingTableInput.ModifiedBy,
                                    bookingTableInput.Quoted,
-                                   bookingTableInput.PaymentStatus,
-                                   bookingTableInput.TableNumbers,
-                                   bookingTableInput.WaitListTime,
-                                   bookingTableInput.SeatedTime
+                                   bookingTableInput.BookingStatus,
+                                   bookingTableInput.TruflUserCardDataID,
+                                   bookingTableInput.TruflTCID
                                    );
-
 
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
                 using (SqlConnection con = new SqlConnection(connectionString))
@@ -1635,7 +1619,6 @@ namespace Trufl.Data_Access_Layer
             {
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
-                //return false;
             }
         }
 
@@ -3278,6 +3261,7 @@ namespace Trufl.Data_Access_Layer
             return dsResponse;
         }
 
+
         public bool SaveRestaurantRewards(RestaurantRewards restaurantRewards)
         {
             try
@@ -3434,6 +3418,35 @@ namespace Trufl.Data_Access_Layer
         }
 
         #endregion
-               
+        public DataSet GetTruflCustomer(string QueryType, int RestaurantID)
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spZGetTruflCustomer", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@QueryType", QueryType);
+                        tvpParam.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
     }
 }

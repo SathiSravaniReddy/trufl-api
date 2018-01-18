@@ -372,8 +372,12 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.SaveRestaurantRewards(restaurantRewards);
         }
-     
+
         #endregion
 
+        public DataSet GetTruflCustomer(string QueryType, int RestaurantID)
+        {
+            return _hostessDL.GetTruflCustomer(QueryType, RestaurantID);
+        }
     }
 }
