@@ -658,6 +658,66 @@ namespace Trufl.Data_Access_Layer
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="saveUserCardDetailsDTO"></param>
+        /// <returns></returns>
+        public bool SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spSaveUserCardDetails", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvparam = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
+                        tvparam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@NameOnCard", saveUserCardDetails.NameOnCard);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@BillingAddress1", saveUserCardDetails.BillingAddress1);
+                        tvpParam3.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@BillingAddress2", saveUserCardDetails.BillingAddress2);
+                        tvpParam4.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@City", saveUserCardDetails.City);
+                        tvpParam5.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@State", saveUserCardDetails.State);
+                        tvpParam6.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@Zip", saveUserCardDetails.Zip);
+                        tvpParam7.SqlDbType = SqlDbType.Text;
+
+                        SqlParameter pvNewId = new SqlParameter();
+                        pvNewId.ParameterName = "@RetVal";
+                        pvNewId.DbType = DbType.Int32;
+                        pvNewId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(pvNewId);
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //var s = ex.Message;
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+                //return false;
+            }
+        }
+
+        /// <summary>
         /// This method 'spGetEmployeConfigration' will Get Employe Configration details
         /// </summary>
         /// <param name=" data"></param>

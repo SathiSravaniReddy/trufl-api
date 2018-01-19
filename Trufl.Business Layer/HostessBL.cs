@@ -93,7 +93,10 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.SaveUserBioEvents(saveUserBioEvents);
         }
-
+        public bool SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
+        {
+            return _hostessDL.SaveUserCardDetails(saveUserCardDetails);
+        }
         public DataTable GetBioCategories()
         {
             return _hostessDL.GetBioCategories();

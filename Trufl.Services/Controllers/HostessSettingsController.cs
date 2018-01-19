@@ -41,6 +41,21 @@ namespace Trufl.Services.Controllers
             }
         }
 
+        [Route("SaveUserCardDetails")]
+        [HttpPost]
+        public object SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
+        {
+            try
+            {
+                bool res = _hostessBL.SaveUserCardDetails(saveUserCardDetails);
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+            }
+            catch (Exception ex)
+            {
+                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+            }
+        }
+
         [Route("GetEmployeConfiguration/{TruflUserType}/{RestaurantID}")]
         [HttpGet]
         public object GetEmployeConfigration(string TruflUserType, int RestaurantID)
