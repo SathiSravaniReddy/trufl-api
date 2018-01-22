@@ -717,6 +717,76 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+        public bool SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
+        {
+            try
+            {
+                var dtClient = new DataTable();
+
+                
+
+        dtClient.Columns.Add("TruflUserCardDataID", typeof(Int32));
+                dtClient.Columns.Add("TruflUserID", typeof(Int32));
+                dtClient.Columns.Add("CardType", typeof(string));
+                dtClient.Columns.Add("CardNumber", typeof(string));
+                dtClient.Columns.Add("Salt", typeof(string));
+                dtClient.Columns.Add("Zipcode", typeof(string));
+                dtClient.Columns.Add("CreatedDate", typeof(DateTime));
+                dtClient.Columns.Add("CreatedBy", typeof(string));
+
+                dtClient.Rows.Add(1,
+                                   saveUserCardDetails.TruflUserID,
+                                   1,
+                                   saveUserCardDetails.CardNo,
+                                   1,
+                                   saveUserCardDetails.Zip,
+                                   DateTime.UtcNow,
+                                   12
+                                   );
+
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spSaveTruflUserCardData", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserCardDataTY", dtClient);
+                        tvpParam.SqlDbType = SqlDbType.Structured;
+                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
+                        tvparam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
+                        tvparam2.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvparam3 = cmd.Parameters.AddWithValue("@LoggedInUser", 12);
+                        tvparam3.SqlDbType = SqlDbType.Int;
+
+                        SqlParameter pvNewId = new SqlParameter();
+                        pvNewId.ParameterName = "@RetVal";
+                        pvNewId.DbType = DbType.Int32;
+                        pvNewId.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(pvNewId);
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
+
+
         /// <summary>
         /// This method 'spGetEmployeConfigration' will Get Employe Configration details
         /// </summary>
@@ -753,61 +823,36 @@ namespace Trufl.Data_Access_Layer
             return sendResponse;
         }
 
-        /// <summary>
-        /// This method 'GetBioCategories' will Get BioCategories  list
-        /// </summary>
-        /// <param name=" data"></param>
-        /// <returns>Returns Get Bio Categories Details  </returns>
-        public DataTable GetBioCategories()
+
+        public DataSet GetCustomerRewards(CustomerRewards customerRewards)
         {
-            DataTable sendResponse = new DataTable();
+            DataSet dsResponse = new DataSet();
             try
             {
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spGetBioCategories", con))
+                    using (SqlCommand cmd = new SqlCommand("spGetCustomerRewards", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                        {
-                            da.Fill(sendResponse);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ExceptionLogger.WriteToErrorLogFile(ex);
-                throw ex;
-            }
-            return sendResponse;
-        }
-
-        /// <summary>
-        /// This method 'GetBioEvents' will Get Bio Events  details
-        /// </summary>
-        /// <param name=" data"></param>
-        /// <returns>Returns Get Bio Events Details  </returns>
-        public DataTable GetBioEvents(int BioID)
-        {
-            DataTable sendResponse = new DataTable();
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spGetBioEvents", con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@BioID", BioID);
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", customerRewards.TruflUserID);
                         tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", customerRewards.RestaurantID);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@QueryType", customerRewards.QueryType);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
 
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
-                            da.Fill(sendResponse);
+                            da.Fill(dsResponse);
                         }
+                        if (customerRewards.QueryType.ToUpper() == "RESTREWARD")
+                        dsResponse.Tables[0].TableName = "Rewards";
+                        else if (customerRewards.QueryType.ToUpper() == "CREWARDDET")
+                            dsResponse.Tables[0].TableName = "AllRestaurantRewards";
+                        else if (customerRewards.QueryType.ToUpper() == "RESTREWARD")
+                            dsResponse.Tables[0].TableName = "RestaurantRewards";
+
                     }
                 }
             }
@@ -816,13 +861,13 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
-            return sendResponse;
+            return dsResponse;
         }
 
         #endregion
 
         #region HostessRestaurantEmployeeController
-               
+
         /// <summary>
         /// This method 'GetRestaurantUserDetails ' returns Restaurant User details
         /// </summary>
@@ -3478,6 +3523,7 @@ namespace Trufl.Data_Access_Layer
         }
 
         #endregion
+
         public DataSet GetTruflCustomer(string QueryType, int RestaurantID)
         {
             DataSet dsResponse = new DataSet();

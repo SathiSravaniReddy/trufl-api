@@ -93,23 +93,25 @@ namespace Trufl.Business_Layer
         {
             return _hostessDL.SaveUserBioEvents(saveUserBioEvents);
         }
+
         public bool SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
         {
             return _hostessDL.SaveUserCardDetails(saveUserCardDetails);
         }
-        public DataTable GetBioCategories()
-        {
-            return _hostessDL.GetBioCategories();
-        }
 
-        public DataTable GetBioEvents(int BioID)
+        public bool SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
         {
-            return _hostessDL.GetBioEvents(BioID);
+            return _hostessDL.SaveTruflUserCardData(saveUserCardDetails);
         }
 
         public DataTable GetEmployeConfiguration(string TruflUserType, int RestaurantID)
         {
             return _hostessDL.GetEmployeConfiguration(TruflUserType, RestaurantID);
+        }
+
+        public DataSet GetCustomerRewards(CustomerRewards customerRewards)
+        {
+            return _hostessDL.GetCustomerRewards(customerRewards);
         }
 
         #endregion

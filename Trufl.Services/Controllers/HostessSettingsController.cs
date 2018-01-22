@@ -56,6 +56,21 @@ namespace Trufl.Services.Controllers
             }
         }
 
+        //[Route("SaveTruflUserCardData")]
+        //[HttpPost]
+        //public object SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
+        //{
+        //    try
+        //    {
+        //        bool res = _hostessBL.SaveTruflUserCardData(saveUserCardDetails);
+        //        return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
+        //    }
+        //}
+
         [Route("GetEmployeConfiguration/{TruflUserType}/{RestaurantID}")]
         [HttpGet]
         public object GetEmployeConfigration(string TruflUserType, int RestaurantID)
@@ -72,30 +87,14 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        [Route("GetBioCategories")]
-        [HttpGet]
-        public object GetBioCategories()
+        [Route("GetCustomerRewards")]
+        [HttpPost]
+        public object GetCustomerRewards(CustomerRewards customerRewards)
         {
-            DataTable res = new DataTable();
+            DataSet res = new DataSet();
             try
             {
-            res = _hostessBL.GetBioCategories();
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
-            }
-            catch (Exception ex)
-            {
-                return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
-            }
-        }
-
-        [Route("GetBioEvents/{BioID}")]
-        [HttpGet]
-        public object GetBioEvents(int BioID)
-        {
-            DataTable res = new DataTable();
-            try
-            {
-            res = _hostessBL.GetBioEvents(BioID);
+                res = _hostessBL.GetCustomerRewards(customerRewards);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)
