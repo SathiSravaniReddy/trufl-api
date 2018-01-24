@@ -378,8 +378,11 @@ namespace Trufl.Data_Access_Layer
             int sDay, eDay, MealID;
             string strDay, MealType, From, To;
             bool blMealType;
+            DataRow drnew;
 
             DataTable dtMeal = new DataTable();
+            dtMeal.Columns.Add("MealID", typeof(string));
+            dtMeal.Columns.Add("MealType", typeof(string));
             dtMeal.Columns.Add("MealTime", typeof(string));
 
             //ToDay = Convert.ToInt16(DateTime.Now.DayOfWeek);
@@ -412,15 +415,22 @@ namespace Trufl.Data_Access_Layer
                                 else
                                     To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
 
-                                if (blMealType)
-                                    strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                                else
-                                {
-                                    strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                                    blMealType = true;
-                                }
+                                //if (blMealType)
+                                //    strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                //else
+                                //{
+                                //    strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                                //    blMealType = true;
+                                //}
+                                strDay = From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
 
-                                dtMeal.Rows.Add(strDay);
+                                drnew = dtMeal.NewRow();
+                                drnew["MealID"] = MealID;
+                                drnew["MealType"] = MealType;
+                                drnew["MealTime"] = strDay;
+                                dtMeal.Rows.Add(drnew);
+
+                                //dtMeal.Rows.Add(strDay);
                                 MealStartTime = Convert.ToDateTime(drv["MealStartTime"]);
                                 MealEndTime = Convert.ToDateTime(drv["MealEndTime"]);
                                 sDay = Convert.ToInt16(drv["Day"]);
@@ -442,15 +452,22 @@ namespace Trufl.Data_Access_Layer
                         else
                             To = " - " + ((DayOfWeek)(eDay % 7)).ToString();
 
-                        if (blMealType)
-                            strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                        else
-                        {
-                            strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
-                            blMealType = true;
-                        }
+                        //if (blMealType)
+                        //    //strDay = "          :" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        //    strDay = From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        //else
+                        //{
+                        //    //strDay = MealType.PadRight(10, ' ') + ":" + From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        //    strDay = From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
+                        //    blMealType = true;
+                        //}
+                        strDay = From + To + " from " + MealStartTime.ToShortTimeString() + " to " + MealEndTime.ToShortTimeString();
 
-                        dtMeal.Rows.Add(strDay);
+                        drnew = dtMeal.NewRow();
+                        drnew["MealID"] = MealID;
+                        drnew["MealType"] = MealType;
+                        drnew["MealTime"] = strDay;
+                        dtMeal.Rows.Add(drnew);
                     }
                 }
                 dtMeal.TableName = "Meal";
