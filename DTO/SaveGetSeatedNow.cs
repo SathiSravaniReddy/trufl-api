@@ -12,5 +12,6 @@ namespace DTO
         public int TableType { get; set; }
         public int NoOfTables { get; set; }
         public float Amount { get; set; }
+        public bool IsEnabled { get; set; }
     }
 }

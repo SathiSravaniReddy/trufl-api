@@ -751,14 +751,20 @@ namespace Trufl.Data_Access_Layer
                     using (SqlCommand cmd = new SqlCommand("spSaveTruflUserCardData", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserCardDataTY", dtClient);
-                        tvpParam.SqlDbType = SqlDbType.Structured;
+                        //SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserCardDataTY", dtClient);
+                        //tvpParam.SqlDbType = SqlDbType.Structured;
                         SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
                         tvparam1.SqlDbType = SqlDbType.Int;
                         SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
                         tvparam2.SqlDbType = SqlDbType.Text;
                         SqlParameter tvparam3 = cmd.Parameters.AddWithValue("@LoggedInUser", 12);
                         tvparam3.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam4 = cmd.Parameters.AddWithValue("@TruflUserCardDataID", 2);
+                        tvparam4.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam5 = cmd.Parameters.AddWithValue("@Zipcode", 1234);
+                        tvparam5.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam6 = cmd.Parameters.AddWithValue("CreatedBy", 12);
+                        tvparam6.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";
@@ -1915,6 +1921,8 @@ namespace Trufl.Data_Access_Layer
                         tvpParam2.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@Amount", saveGetSeatedNow.Amount);
                         tvpParam3.SqlDbType = SqlDbType.Float;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@IsEnabled", saveGetSeatedNow.IsEnabled);
+                        tvpParam4.SqlDbType = SqlDbType.Float;
 
                         SqlParameter pvRetVal = new SqlParameter();
                         pvRetVal.ParameterName = "@RetVal";
@@ -3544,6 +3552,9 @@ namespace Trufl.Data_Access_Layer
                         {
                             da.Fill(dsResponse);
                         }
+                        dsResponse.Tables[0].TableName = "BookingDetails";
+                        dsResponse.Tables[1].TableName = "RestSettings";
+                        dsResponse.Tables[2].TableName = "GetSeatedNow";
                     }
                 }
             }
