@@ -233,6 +233,11 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateWaitListSeated(seatAGuest);
         }
 
+        public bool UpdateGetSeatedNow(int RestaurantID, int TableType, int UpdateTableCount)
+        {
+            return _hostessDL.UpdateGetSeatedNow(RestaurantID, TableType, UpdateTableCount);
+        }
+
         public DataTable SendPushNotification(int TruflUserID)
         {
             return _hostessDL.SendPushNotification(TruflUserID);

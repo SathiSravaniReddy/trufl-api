@@ -1707,6 +1707,8 @@ namespace Trufl.Data_Access_Layer
                         tvpParam.SqlDbType = SqlDbType.Structured;
                         SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@LoggedInUser", bookingTableInput.LoggedInUser);
                         tvparam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@GetTableNowType", bookingTableInput.GetTableNowType);
+                        tvparam2.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";
@@ -1849,6 +1851,7 @@ namespace Trufl.Data_Access_Layer
                             da.Fill(dtsendResponse);
                         }
                         dtsendResponse.TableName = "SeatAGuest";
+                        dtsendResponse.TableName = "GetSeatedAvbl";
                     }
                 }
             }
@@ -1971,6 +1974,49 @@ namespace Trufl.Data_Access_Layer
                         SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableNumbers", seatAGuest.TableNumbers);
                         tvpParam1.SqlDbType = SqlDbType.Text;
                         SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@SeatedTableType", seatAGuest.SeatedTableType);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
+
+                        SqlParameter pvRetVal = new SqlParameter();
+                        pvRetVal.ParameterName = "@RetVal";
+                        pvRetVal.DbType = DbType.Int32;
+                        pvRetVal.Direction = ParameterDirection.Output;
+                        cmd.Parameters.Add(pvRetVal);
+
+                        int status = cmd.ExecuteNonQuery();
+                        if (status == 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
+        public bool UpdateGetSeatedNow(int RestaurantID, int TableType, int UpdateTableCount)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spUpdateGetSeatedNow", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableType", TableType);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@UpdateTableCount", UpdateTableCount);
                         tvpParam2.SqlDbType = SqlDbType.Text;
 
                         SqlParameter pvRetVal = new SqlParameter();
@@ -3373,8 +3419,7 @@ namespace Trufl.Data_Access_Layer
             }
             return dsResponse;
         }
-
-
+        
         public bool SaveRestaurantRewards(RestaurantRewards restaurantRewards)
         {
             try
@@ -3564,6 +3609,5 @@ namespace Trufl.Data_Access_Layer
             }
             return dsResponse;
         }
-
     }
 }

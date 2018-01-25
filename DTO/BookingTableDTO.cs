@@ -19,5 +19,6 @@ namespace DTO
         public int TruflUserCardDataID { get; set; }
         public int TruflTCID { get; set; }
         public int LoggedInUser { get; set; }
+        public int GetTableNowType { get; set; }
     }
 }

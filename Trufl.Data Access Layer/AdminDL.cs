@@ -322,7 +322,7 @@ namespace Trufl.Data_Access_Layer
 
                     ds_ImageUrl = GetRestaurantImageUrls(ID);
 
-                    if (ds_ImageUrl.Tables["MainLogo"].Rows.Count >0)
+                    if (ds_ImageUrl.Tables["MainLogo"].Rows.Count > 0)
                     {
                         sendResponse.Tables[0].Rows[0]["Image_Url"] = ds_ImageUrl.Tables["MainLogo"].Rows[0]["MainLogo"];
                     }
