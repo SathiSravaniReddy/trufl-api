@@ -9,6 +9,7 @@ using System.Configuration;
 using DTO;
 using Trufl.Logging;
 using TruflEmailService;
+using TruflEmailService.AES256Encryption;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -660,34 +661,42 @@ namespace Trufl.Data_Access_Layer
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="saveUserCardDetailsDTO"></param>
+        /// <param name="SaveUserCardDataDTO"></param>
         /// <returns></returns>
-        public bool SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
+        public bool SaveTruflUserCardData(SaveUserCardDataDTO saveUserCardData)
         {
             try
             {
+                string EncryptedCardNo = "";
+
+                if (saveUserCardData.CardNo.ToString() != "")
+                {
+                    string randomstring = string.Join(":", new string[] { saveUserCardData.CardNo, EncryptionLibrary.GetUniqueKey() });
+                    EncryptedCardNo = EncryptionLibrary.EncryptText(randomstring);
+                }
+
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spSaveUserCardDetails", con))
+                    using (SqlCommand cmd = new SqlCommand("spSaveTruflUserCardData", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvparam = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
+                        SqlParameter tvparam = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardData.TruflUserID);
                         tvparam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
-                        tvpParam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@NameOnCard", saveUserCardDetails.NameOnCard);
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@CardNumber", EncryptedCardNo);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@NameOnCard", saveUserCardData.NameOnCard);
                         tvpParam2.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@BillingAddress1", saveUserCardDetails.BillingAddress1);
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@BillingAddress1", saveUserCardData.BillingAddress1);
                         tvpParam3.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@BillingAddress2", saveUserCardDetails.BillingAddress2);
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@BillingAddress2", saveUserCardData.BillingAddress2);
                         tvpParam4.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@City", saveUserCardDetails.City);
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@City", saveUserCardData.City);
                         tvpParam5.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@State", saveUserCardDetails.State);
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@State", saveUserCardData.State);
                         tvpParam6.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@Zip", saveUserCardDetails.Zip);
+                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@Zip", saveUserCardData.Zip);
                         tvpParam7.SqlDbType = SqlDbType.Text;
 
                         SqlParameter pvNewId = new SqlParameter();
@@ -710,78 +719,42 @@ namespace Trufl.Data_Access_Layer
             }
             catch (Exception ex)
             {
-                //var s = ex.Message;
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
-                //return false;
             }
         }
 
-        public bool SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
+        public DataTable GetTruflUserCardData(int TruflUserID)
         {
+            DataTable dtsendResponse = new DataTable();
             try
             {
-                var dtClient = new DataTable();
-
-                
-
-        dtClient.Columns.Add("TruflUserCardDataID", typeof(Int32));
-                dtClient.Columns.Add("TruflUserID", typeof(Int32));
-                dtClient.Columns.Add("CardType", typeof(string));
-                dtClient.Columns.Add("CardNumber", typeof(string));
-                dtClient.Columns.Add("Salt", typeof(string));
-                dtClient.Columns.Add("Zipcode", typeof(string));
-                dtClient.Columns.Add("CreatedDate", typeof(DateTime));
-                dtClient.Columns.Add("CreatedBy", typeof(string));
-
-                dtClient.Rows.Add(1,
-                                   saveUserCardDetails.TruflUserID,
-                                   1,
-                                   saveUserCardDetails.CardNo,
-                                   1,
-                                   saveUserCardDetails.Zip,
-                                   DateTime.UtcNow,
-                                   12
-                                   );
-
-                string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spSaveTruflUserCardData", con))
+                    using (SqlCommand cmd = new SqlCommand("spGetTruflUserCardData", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        //SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserCardDataTY", dtClient);
-                        //tvpParam.SqlDbType = SqlDbType.Structured;
-                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
-                        tvparam1.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
-                        tvparam2.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvparam3 = cmd.Parameters.AddWithValue("@LoggedInUser", 12);
-                        tvparam3.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam4 = cmd.Parameters.AddWithValue("@TruflUserCardDataID", 2);
-                        tvparam4.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam5 = cmd.Parameters.AddWithValue("@Zipcode", 1234);
-                        tvparam5.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvparam6 = cmd.Parameters.AddWithValue("CreatedBy", 12);
-                        tvparam6.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
 
-                        SqlParameter pvNewId = new SqlParameter();
-                        pvNewId.ParameterName = "@RetVal";
-                        pvNewId.DbType = DbType.Int32;
-                        pvNewId.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(pvNewId);
-
-                        int status = cmd.ExecuteNonQuery();
-                        if (status == 0)
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
+                            da.Fill(dtsendResponse);
                         }
                     }
+                }
+                string TruflUserCardNo = "", EncryptedCardNo = "";
+                if (dtsendResponse.Rows.Count > 0)
+                {
+                    EncryptedCardNo = dtsendResponse.Rows[0]["CardNumber"].ToString();
+                   var key = EncryptionLibrary.DecryptText(EncryptedCardNo);
+
+                    string[] parts = key.Split(new char[] { ':' });
+
+                    TruflUserCardNo = parts[0];       // UserID
+                    var RandomKey = parts[1];
+                    dtsendResponse.Rows[0]["CardNumber"] = TruflUserCardNo;
                 }
             }
             catch (Exception ex)
@@ -789,7 +762,79 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
+            return dtsendResponse;
         }
+
+        //public bool SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
+        //{
+        //    try
+        //    {
+        //        var dtClient = new DataTable();
+        //dtClient.Columns.Add("TruflUserCardDataID", typeof(Int32));
+        //        dtClient.Columns.Add("TruflUserID", typeof(Int32));
+        //        dtClient.Columns.Add("CardType", typeof(string));
+        //        dtClient.Columns.Add("CardNumber", typeof(string));
+        //        dtClient.Columns.Add("Salt", typeof(string));
+        //        dtClient.Columns.Add("Zipcode", typeof(string));
+        //        dtClient.Columns.Add("CreatedDate", typeof(DateTime));
+        //        dtClient.Columns.Add("CreatedBy", typeof(string));
+
+        //        dtClient.Rows.Add(1,
+        //                           saveUserCardDetails.TruflUserID,
+        //                           1,
+        //                           saveUserCardDetails.CardNo,
+        //                           1,
+        //                           saveUserCardDetails.Zip,
+        //                           DateTime.UtcNow,
+        //                           12
+        //                           );
+
+        //        string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+        //        using (SqlConnection con = new SqlConnection(connectionString))
+        //        {
+        //            con.Open();
+        //            using (SqlCommand cmd = new SqlCommand("spSaveTruflUserCardData", con))
+        //            {
+        //                cmd.CommandType = CommandType.StoredProcedure;
+        //                //SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserCardDataTY", dtClient);
+        //                //tvpParam.SqlDbType = SqlDbType.Structured;
+        //                SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@TruflUserID", saveUserCardDetails.TruflUserID);
+        //                tvparam1.SqlDbType = SqlDbType.Int;
+        //                SqlParameter tvparam2 = cmd.Parameters.AddWithValue("@CardNo", saveUserCardDetails.CardNo);
+        //                tvparam2.SqlDbType = SqlDbType.Text;
+        //                SqlParameter tvparam3 = cmd.Parameters.AddWithValue("@LoggedInUser", 12);
+        //                tvparam3.SqlDbType = SqlDbType.Int;
+        //                SqlParameter tvparam4 = cmd.Parameters.AddWithValue("@TruflUserCardDataID", 2);
+        //                tvparam4.SqlDbType = SqlDbType.Int;
+        //                SqlParameter tvparam5 = cmd.Parameters.AddWithValue("@Zipcode", 1234);
+        //                tvparam5.SqlDbType = SqlDbType.Int;
+        //                SqlParameter tvparam6 = cmd.Parameters.AddWithValue("CreatedBy", 12);
+        //                tvparam6.SqlDbType = SqlDbType.Int;
+
+        //                SqlParameter pvNewId = new SqlParameter();
+        //                pvNewId.ParameterName = "@RetVal";
+        //                pvNewId.DbType = DbType.Int32;
+        //                pvNewId.Direction = ParameterDirection.Output;
+        //                cmd.Parameters.Add(pvNewId);
+
+        //                int status = cmd.ExecuteNonQuery();
+        //                if (status == 0)
+        //                {
+        //                    return false;
+        //                }
+        //                else
+        //                {
+        //                    return true;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ExceptionLogger.WriteToErrorLogFile(ex);
+        //        throw ex;
+        //    }
+        //}
 
 
 
@@ -1829,9 +1874,9 @@ namespace Trufl.Data_Access_Layer
         /// </summary>
         /// <param name="RestaurantID"> RestaurantID as Input</param>
         /// <returns>Returns the details of the available tables</returns>
-        public DataTable GetSeatAGuest(int RestaurantID)
+        public DataSet GetSeatAGuest(int RestaurantID)
         {
-            DataTable dtsendResponse = new DataTable();
+            DataSet dssendResponse = new DataSet();
             try
             {
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
@@ -1848,10 +1893,10 @@ namespace Trufl.Data_Access_Layer
 
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
-                            da.Fill(dtsendResponse);
+                            da.Fill(dssendResponse);
                         }
-                        dtsendResponse.TableName = "SeatAGuest";
-                        dtsendResponse.TableName = "GetSeatedAvbl";
+                        dssendResponse.Tables[0].TableName = "SeatAGuest";
+                        dssendResponse.Tables[1].TableName = "GetSeatedAvbl";
                     }
                 }
             }
@@ -1860,7 +1905,7 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
-            return dtsendResponse;
+            return dssendResponse;
         }
 
         /// <summary>

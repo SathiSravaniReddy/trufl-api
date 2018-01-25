@@ -94,19 +94,19 @@ namespace Trufl.Business_Layer
             return _hostessDL.SaveUserBioEvents(saveUserBioEvents);
         }
 
-        public bool SaveUserCardDetails(SaveUserCardDetailsDTO saveUserCardDetails)
+        public bool SaveTruflUserCardData(SaveUserCardDataDTO saveUserCardData)
         {
-            return _hostessDL.SaveUserCardDetails(saveUserCardDetails);
-        }
-
-        public bool SaveTruflUserCardData(SaveUserCardDetailsDTO saveUserCardDetails)
-        {
-            return _hostessDL.SaveTruflUserCardData(saveUserCardDetails);
+            return _hostessDL.SaveTruflUserCardData(saveUserCardData);
         }
 
         public DataTable GetEmployeConfiguration(string TruflUserType, int RestaurantID)
         {
             return _hostessDL.GetEmployeConfiguration(TruflUserType, RestaurantID);
+        }
+
+        public DataTable GetTruflUserCardData(int TruflUserID)
+        {
+            return _hostessDL.GetTruflUserCardData(TruflUserID);
         }
 
         public DataSet GetCustomerRewards(CustomerRewards customerRewards)
@@ -213,7 +213,7 @@ namespace Trufl.Business_Layer
             return _hostessDL.UpdateBooking(updateBookingTableNumber);
         }
 
-        public DataTable GetSeatAGuest(int RestaurantID)
+        public DataSet GetSeatAGuest(int RestaurantID)
         {
             return _hostessDL.GetSeatAGuest(RestaurantID);
         }

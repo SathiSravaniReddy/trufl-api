@@ -157,7 +157,7 @@ namespace Trufl.Services.Controllers
         [HttpGet]
         public object GetSeatAGuest(int RestaurantID)
         {
-            DataTable res = new DataTable();
+            DataSet res = new DataSet();
             try
             {
                 res = _hostessBL.GetSeatAGuest(RestaurantID);
@@ -229,8 +229,7 @@ namespace Trufl.Services.Controllers
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeFailed, _Data = ex.ToString(), _StatusCode = TruflConstants._StatusCodeFailed, _StatusMessage = TruflConstants._StatusMessageFailed });
             }
         }
-
-
+        
         [Route("SendPushNotification/{TruflUserID}")]
         [HttpGet]
         public object SendPushNotification(int TruflUserID)
