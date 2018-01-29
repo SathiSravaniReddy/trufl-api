@@ -11,8 +11,9 @@ namespace DTO
         public int TruflUserID { get; set; }
         public int RestaurantID { get; set; }
         public int BillAmount { get; set; }
+        public int PartySize { get; set; }
         //public int RewardPoints { get; set; }
-       // public bool IsWinBid { get; set; }
+        // public bool IsWinBid { get; set; }
         public string RewardType { get; set; }
     }
 }

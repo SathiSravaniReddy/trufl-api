@@ -667,12 +667,13 @@ namespace Trufl.Data_Access_Layer
         {
             try
             {
-                string EncryptedCardNo = "";
+                string EncryptedCardNo = "", DisplayCardNo = "";
 
                 if (saveUserCardData.CardNo.ToString() != "")
                 {
                     string randomstring = string.Join(":", new string[] { saveUserCardData.CardNo, EncryptionLibrary.GetUniqueKey() });
                     EncryptedCardNo = EncryptionLibrary.EncryptText(randomstring);
+                    DisplayCardNo = "..." + saveUserCardData.CardNo.Substring(saveUserCardData.CardNo.Length-4);
                 }
 
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
@@ -686,18 +687,20 @@ namespace Trufl.Data_Access_Layer
                         tvparam.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@CardNumber", EncryptedCardNo);
                         tvpParam1.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@NameOnCard", saveUserCardData.NameOnCard);
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@DisplayCardNo", DisplayCardNo);
                         tvpParam2.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@BillingAddress1", saveUserCardData.BillingAddress1);
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@NameOnCard", saveUserCardData.NameOnCard);
                         tvpParam3.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@BillingAddress2", saveUserCardData.BillingAddress2);
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@BillingAddress1", saveUserCardData.BillingAddress1);
                         tvpParam4.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@City", saveUserCardData.City);
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@BillingAddress2", saveUserCardData.BillingAddress2);
                         tvpParam5.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@State", saveUserCardData.State);
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@City", saveUserCardData.City);
                         tvpParam6.SqlDbType = SqlDbType.Text;
-                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@Zip", saveUserCardData.Zip);
+                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@State", saveUserCardData.State);
                         tvpParam7.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam8 = cmd.Parameters.AddWithValue("@Zip", saveUserCardData.Zip);
+                        tvpParam8.SqlDbType = SqlDbType.Text;
 
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";
@@ -3591,8 +3594,10 @@ namespace Trufl.Data_Access_Layer
                             tvpParam9.SqlDbType = SqlDbType.Int;
                             SqlParameter tvpParam10 = cmd.Parameters.AddWithValue("@BillAmount", restaurantRewards.BillAmount);
                             tvpParam10.SqlDbType = SqlDbType.Int;
-                            SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@TruflOperationType", TruflOperationType);
-                            tvpParam11.SqlDbType = SqlDbType.Text;
+                            SqlParameter tvpParam11 = cmd.Parameters.AddWithValue("@PartySize", restaurantRewards.PartySize);
+                            tvpParam11.SqlDbType = SqlDbType.Int;
+                            SqlParameter tvpParam12 = cmd.Parameters.AddWithValue("@TruflOperationType", TruflOperationType);
+                            tvpParam12.SqlDbType = SqlDbType.Text;
 
                             SqlParameter pvNewId = new SqlParameter();
                             pvNewId.ParameterName = "@RetVal";
