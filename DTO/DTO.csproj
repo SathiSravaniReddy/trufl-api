@@ -85,6 +85,7 @@
     <Compile Include="UpdateBookingTableNumberDTO.cs" />
     <Compile Include="UpdateRestaurantGuestDTO.cs" />
     <Compile Include="UpdateRestaurantHostStatusDTO.cs" />
+    <Compile Include="UserFavoutiteRestaurant.cs" />
     <Compile Include="UserProfile.cs" />
   </ItemGroup>
   <ItemGroup>

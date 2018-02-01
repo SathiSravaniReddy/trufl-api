@@ -65,9 +65,9 @@ namespace Trufl.Business_Layer
 
         #region TruflAdminLoginController
 
-        public bool UpdateUserFavoriteRestaurants(int TruflUserID, string FavRestaurant)
+        public bool SaveUserRestFavoutrite(UserFavoutiteRestaurant userFavoutiteRestaurant)
         {
-            return _adminDL.UpdateUserFavoriteRestaurants(TruflUserID, FavRestaurant);
+            return _adminDL.SaveUserRestFavoutrite(userFavoutiteRestaurant);
         }
 
         

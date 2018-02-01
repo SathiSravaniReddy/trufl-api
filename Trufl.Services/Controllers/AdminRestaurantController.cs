@@ -97,13 +97,13 @@ namespace Trufl.Services.Controllers
             }
         }
 
-        [Route("UpdateUserFavoriteRestaurants")]
+        [Route("SaveUserRestFavoutrite")]
         [HttpPost]
-        public object UpdateUserFavoriteRestaurants(int TruflUserID, string FavRestaurant)
+        public object SaveUserRestFavoutrite(UserFavoutiteRestaurant userFavoutiteRestaurant)
         {
             try
             {
-                bool res = _adminBL.UpdateUserFavoriteRestaurants(TruflUserID, FavRestaurant);
+                bool res = _adminBL.SaveUserRestFavoutrite(userFavoutiteRestaurant);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

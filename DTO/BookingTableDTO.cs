@@ -16,8 +16,6 @@ namespace DTO
         public int OfferAmount { get; set; }
         public int Quoted { get; set; }
         public int BookingStatus { get; set; }
-        public int TruflUserCardDataID { get; set; }
-        public int TruflTCID { get; set; }
         public int LoggedInUser { get; set; }
         public int GetTableNowType { get; set; }
     }

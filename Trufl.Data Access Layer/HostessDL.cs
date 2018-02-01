@@ -906,7 +906,8 @@ namespace Trufl.Data_Access_Layer
                             dsResponse.Tables[0].TableName = "AllRestaurantRewards";
                         else if (customerRewards.QueryType.ToUpper() == "RESTREWARD")
                             dsResponse.Tables[0].TableName = "RestaurantRewards";
-
+                        else if (customerRewards.QueryType.ToUpper() == "TRANSHSTRY")
+                            dsResponse.Tables[0].TableName = "TransactionHistory";
                     }
                 }
             }
@@ -1729,8 +1730,6 @@ namespace Trufl.Data_Access_Layer
                 dtClient.Columns.Add("OfferAmount", typeof(Int32));
                 dtClient.Columns.Add("Quoted", typeof(Int32));
                 dtClient.Columns.Add("BookingStatus", typeof(Int32));
-                dtClient.Columns.Add("TruflUserCardDataID", typeof(Int32));
-                dtClient.Columns.Add("TruflTCID", typeof(Int32));
 
                 dtClient.Rows.Add(bookingTableInput.BookingID,
                                    bookingTableInput.TruflUserID,
@@ -1739,9 +1738,7 @@ namespace Trufl.Data_Access_Layer
                                    bookingTableInput.OfferType,
                                    bookingTableInput.OfferAmount,
                                    bookingTableInput.Quoted,
-                                   bookingTableInput.BookingStatus,
-                                   bookingTableInput.TruflUserCardDataID,
-                                   bookingTableInput.TruflTCID
+                                   bookingTableInput.BookingStatus
                                    );
 
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
@@ -2063,15 +2060,9 @@ namespace Trufl.Data_Access_Layer
                         SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
                         tvpParam.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TableType", TableType);
-                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        tvpParam1.SqlDbType = SqlDbType.Int;
                         SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@UpdateTableCount", UpdateTableCount);
-                        tvpParam2.SqlDbType = SqlDbType.Text;
-
-                        SqlParameter pvRetVal = new SqlParameter();
-                        pvRetVal.ParameterName = "@RetVal";
-                        pvRetVal.DbType = DbType.Int32;
-                        pvRetVal.Direction = ParameterDirection.Output;
-                        cmd.Parameters.Add(pvRetVal);
+                        tvpParam2.SqlDbType = SqlDbType.Int;
 
                         int status = cmd.ExecuteNonQuery();
                         if (status == 0)

@@ -623,7 +623,7 @@ namespace Trufl.Data_Access_Layer
 
         #endregion
 
-        public bool UpdateUserFavoriteRestaurants(int TruflUserID, string FavRestaurant)
+        public bool SaveUserRestFavoutrite(UserFavoutiteRestaurant userFavoutiteRestaurant)
         {
             DataTable sendResponse = new DataTable();
             try
@@ -631,14 +631,16 @@ namespace Trufl.Data_Access_Layer
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
-                    using (SqlCommand cmd = new SqlCommand("spUpdateUserFavoriteRestaurants", con))
+                    using (SqlCommand cmd = new SqlCommand("spSaveUserRestFavoutrite", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", TruflUserID);
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", userFavoutiteRestaurant.TruflUserID);
                         tvpParam.SqlDbType = SqlDbType.Int;
-                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@FavRestaurant", FavRestaurant);
-                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@RestaurantID", userFavoutiteRestaurant.RestaurantID);
+                        tvpParam1.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@IsFav", userFavoutiteRestaurant.IsFav);
+                        tvpParam2.SqlDbType = SqlDbType.Bit;
 
                         int status = cmd.ExecuteNonQuery();
                         if (status == -1)
