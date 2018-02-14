@@ -49,7 +49,7 @@ namespace Trufl.Services.Controllers
         {
             try
             {
-            bool res = _hostessBL.SaveSignUpUserInfo(registerUserInfo);
+                bool res = _hostessBL.SaveSignUpUserInfo(registerUserInfo);
                 return Json(new JsonResponseResult { _ErrorCode = TruflConstants._ErrorCodeSuccess, _Data = res, _StatusCode = TruflConstants._StatusCodeOK, _StatusMessage = TruflConstants._StatusMessageSuccess });
             }
             catch (Exception ex)

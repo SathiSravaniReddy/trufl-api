@@ -330,67 +330,88 @@ namespace Trufl.Data_Access_Layer
         /// <returns>Returns 1 if Success, 0 for failure</returns>
         public bool SaveSignUpUserInfo(TruflUserDTO registerUserInfo)
         {
+            DataTable dtResponse = new DataTable();
             try
             {
-                var dtClient = new DataTable();
+                    string NewTruflUserShareCode = GetNewShareCode(registerUserInfo.TruflUserID);
 
-                dtClient.Columns.Add("TruflUserID", typeof(Int32));
-                dtClient.Columns.Add("RestaurantID", typeof(Int32));
-                dtClient.Columns.Add("FullName", typeof(string));
-                dtClient.Columns.Add("Email", typeof(string));
-                dtClient.Columns.Add("pic", typeof(Byte[]));
-                dtClient.Columns.Add("PhoneNumber", typeof(string));
-                dtClient.Columns.Add("Password", typeof(string));
-                //dtClient.Columns.Add("Salt", typeof(string));
-                dtClient.Columns.Add("DOB", typeof(DateTime));
-                dtClient.Columns.Add("ActiveInd", typeof(char));
-                dtClient.Columns.Add("RestaurantEmpInd", typeof(Int32));
-                dtClient.Columns.Add("TruflMemberType", typeof(string));
-                dtClient.Columns.Add("TruflRelationship", typeof(Int32));
-                dtClient.Columns.Add("TruflshareCode", typeof(string));
-                dtClient.Columns.Add("ReferTruflUserID", typeof(Int32));
-                dtClient.Columns.Add("ModifiedDate", typeof(DateTime));
-                dtClient.Columns.Add("ModifiedBy", typeof(Int32));
-                dtClient.Columns.Add("Waited", typeof(TimeSpan));
 
-                //dtClient.Columns.Add("LoggedInUserType", typeof(string));
-                dtClient.Rows.Add(
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  registerUserInfo.FullName,
-                                  registerUserInfo.Email,
-                                  DBNull.Value,
-                                  registerUserInfo.PhoneNumber,
-                                  registerUserInfo.Password,
-                                  //DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value,
-                                  DBNull.Value
-                                  );
+                //var dtClient = new DataTable();
+
+                //dtClient.Columns.Add("TruflUserID", typeof(Int32));
+                //dtClient.Columns.Add("RestaurantID", typeof(Int32));
+                //dtClient.Columns.Add("FullName", typeof(string));
+                //dtClient.Columns.Add("Email", typeof(string));
+                //dtClient.Columns.Add("pic", typeof(Byte[]));
+                //dtClient.Columns.Add("PhoneNumber", typeof(string));
+                //dtClient.Columns.Add("Password", typeof(string));
+                //dtClient.Columns.Add("DOB", typeof(DateTime));
+                //dtClient.Columns.Add("ActiveInd", typeof(char));
+                //dtClient.Columns.Add("RestaurantEmpInd", typeof(Int32));
+                //dtClient.Columns.Add("TruflMemberType", typeof(string));
+                //dtClient.Columns.Add("TruflRelationship", typeof(Int32));
+                //dtClient.Columns.Add("TruflshareCode", typeof(string));
+                //dtClient.Columns.Add("DeviceID", typeof(string));
+                //dtClient.Columns.Add("ModifiedBy", typeof(Int32));
+
+                ////dtClient.Columns.Add("LoggedInUserType", typeof(string));
+                //dtClient.Rows.Add(
+                //                  registerUserInfo.TruflUserID,
+                //                  DBNull.Value,
+                //                  registerUserInfo.FullName,
+                //                  registerUserInfo.Email,
+                //                  DBNull.Value,
+                //                  registerUserInfo.PhoneNumber,
+                //                  registerUserInfo.Password,
+                //                  registerUserInfo.DOB,
+                //                  DBNull.Value,
+                //                  DBNull.Value,
+                //                  registerUserInfo.TruflMemberType,
+                //                  DBNull.Value,
+                //                  NewTruflUserShareCode,
+                //                  registerUserInfo.DeviceID,
+                //                  registerUserInfo.ModifiedBy
+                //                  );
 
                 string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     con.Open();
                     using (SqlCommand cmd = new SqlCommand("spSaveTruflUser", con))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserTY", dtClient);
-                        tvpParam.SqlDbType = SqlDbType.Structured;
-                        SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@LoggedInUserType", registerUserInfo.LoggedInUserType);
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@TruflUserID", registerUserInfo.TruflUserID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+                        SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@FullName", registerUserInfo.FullName);
+                        tvpParam1.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam2 = cmd.Parameters.AddWithValue("@Email_ID", registerUserInfo.Email);
+                        tvpParam2.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam3 = cmd.Parameters.AddWithValue("@PhoneNumber", registerUserInfo.PhoneNumber);
+                        tvpParam3.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam4 = cmd.Parameters.AddWithValue("@LoginPassword", registerUserInfo.Password);
+                        tvpParam4.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam5 = cmd.Parameters.AddWithValue("@TruflMemberType", registerUserInfo.TruflMemberType);
+                        tvpParam5.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam6 = cmd.Parameters.AddWithValue("@TruflshareCode", NewTruflUserShareCode);
+                        tvpParam6.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam7 = cmd.Parameters.AddWithValue("@DeviceID", registerUserInfo.DeviceID);
+                        tvpParam7.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam8 = cmd.Parameters.AddWithValue("@TruflUserShareCode", registerUserInfo.ReferedShareCode);
+                        tvpParam8.SqlDbType = SqlDbType.Text;
+                        SqlParameter tvpParam9 = cmd.Parameters.AddWithValue("@ModifiedBy", registerUserInfo.ModifiedBy);
+                        tvpParam9.SqlDbType = SqlDbType.Int;
 
                         SqlParameter pvNewId = new SqlParameter();
                         pvNewId.ParameterName = "@RetVal";
                         pvNewId.DbType = DbType.Int32;
                         pvNewId.Direction = ParameterDirection.Output;
                         cmd.Parameters.Add(pvNewId);
+
+                        //using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        //{
+                        //    da.Fill(dtResponse);
+                        //}
 
                         int status = cmd.ExecuteNonQuery();
                         if (status == 0)
@@ -402,6 +423,69 @@ namespace Trufl.Data_Access_Layer
                             return true;
                         }
                     }
+                    //dtResponse.TableName = "SignUpDetails";
+                }
+                //return dtResponse;
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+        }
+
+        public string GetNewShareCode(int TruflUserId)
+        {
+            string connectionString = ConfigurationManager.AppSettings["TraflConnection"];
+            string NewShareCode = "";
+            bool isAvailable = false;
+            try
+            {
+                while (!isAvailable)
+                {
+                    NewShareCode = GenerateRandomShareCode(6);
+
+                    if (NewShareCode.Length == 0)
+                        isAvailable = false;
+                    else
+                    {
+                        using (SqlConnection con = new SqlConnection(connectionString))
+                        {
+                            con.Open();
+                            using (SqlCommand cmd = new SqlCommand("spVerifyTruflUserShareCode", con))
+                            {
+                                cmd.CommandType = CommandType.StoredProcedure;
+                                SqlParameter tvpParam = cmd.Parameters.AddWithValue("@ShareCode", NewShareCode);
+                                tvpParam.SqlDbType = SqlDbType.Text;
+                                SqlParameter tvpParam1 = cmd.Parameters.AddWithValue("@TruflUserId", TruflUserId);
+                                tvpParam1.SqlDbType = SqlDbType.Int;
+
+                                //SqlParameter tvparam1 = cmd.Parameters.AddWithValue("@LoggedInUserType", registerUserInfo.LoggedInUserType);
+
+                                SqlParameter pvNewId = new SqlParameter();
+                                pvNewId.ParameterName = "@TruflshareCode";
+                                pvNewId.DbType = DbType.Int32;
+                                pvNewId.Direction = ParameterDirection.Output;
+                                cmd.Parameters.Add(pvNewId);
+
+                                int status = cmd.ExecuteNonQuery();
+                                if (status != 0)
+                                {
+                                    if (pvNewId.Value.ToString().Length != 6)
+                                    {
+                                        if (Convert.ToInt32(pvNewId.Value) > 0)
+                                            isAvailable = false;
+                                        else
+                                            isAvailable = true;
+                                    }
+                                    else
+                                    {
+                                        return pvNewId.Value.ToString();
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -409,6 +493,25 @@ namespace Trufl.Data_Access_Layer
                 ExceptionLogger.WriteToErrorLogFile(ex);
                 throw ex;
             }
+            return NewShareCode;
+        }
+
+        public string GenerateRandomShareCode(int CodeLength)
+        {
+            string ReturnCode = "";
+            string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            char[] chars = new char[CodeLength];
+            Random rd = new Random();
+
+            for (int i = 0; i < CodeLength; i++)
+            {
+                chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
+            }
+            ReturnCode = new string(chars);
+            if (ReturnCode.Length != CodeLength)
+                return "";
+            else
+                return ReturnCode;
         }
 
         /// <summary>
@@ -438,6 +541,7 @@ namespace Trufl.Data_Access_Layer
                         {
                             da.Fill(sendResponse);
                         }
+                        //sendResponse.Tables[0].TableName = "LoginDetails";
                     }
                 }
             }
@@ -1612,8 +1716,6 @@ namespace Trufl.Data_Access_Layer
                         }
                     }
                 }
-                 
-                   
             }
             catch (Exception ex)
             {

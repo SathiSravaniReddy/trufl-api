@@ -661,6 +661,373 @@ namespace Trufl.Data_Access_Layer
             }
         }
 
+        public DataSet CalculatedWaittime(int RestaurantID, int PartySize)
+        {
+            int TotalAvailable, currAvailable, cntWaitlist = 0, cntSeated = 0, count = 0;
+            int AddWaitTime = 0, calTtype, CalculatedWaittime = 0;
+            string WStabletype = "";
+            char TType;
+            string strSeatedMin = "";
+            int maxTableType, ReqTableType = 0;
+            bool sizefound = false;
+            int RemDiningTime, DiningTime = 0, nextDining = 0, cntGetTableNow, WaitTime = 0;
+            DataSet ds_ReturnWaitTime = new DataSet();
+
+            DataSet dsCalcWaitTime = new DataSet();
+            DataTable dt_GetWaitTIme = new DataTable();
+            dt_GetWaitTIme.Columns.Add("TableTypeUsed", typeof(string));
+            dt_GetWaitTIme.Columns.Add("CalculatedWaittime", typeof(int));
+            try
+            {
+
+           
+            dsCalcWaitTime = GetRestaurantWaitTimeData(RestaurantID);
+            if (dsCalcWaitTime.Tables["DiningTime"].Rows.Count > 0)
+                DiningTime = Convert.ToInt16(dsCalcWaitTime.Tables["DiningTime"].Rows[0]["DiningTime"]);
+
+            //CheckNoWait
+            sizefound = false;
+            for (int i = 0; i <= dsCalcWaitTime.Tables["WaitTimeStatus"].Rows.Count - 1; i++)
+            {
+                DataView dv = new DataView(dsCalcWaitTime.Tables["AvblByTable"]);
+                DataView dvTableNow = new DataView(dsCalcWaitTime.Tables["GetSeatedNow"]);
+                calTtype = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]);
+                TType = Convert.ToChar(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"].ToString());
+                dv.RowFilter = "TableType = " + calTtype;
+                dvTableNow.RowFilter = "TableType = " + calTtype;
+                maxTableType = calTtype;
+                if (dvTableNow.Count > 0)
+                    cntGetTableNow = Convert.ToInt16(dvTableNow[0]["NumberOfTables"]);
+                else
+                    cntGetTableNow = 0;
+
+                if (dv.Count > 0)
+                    currAvailable = Convert.ToInt16(dv[0]["Available"]) - cntGetTableNow;
+                else
+                    currAvailable = 0;
+                for (int j = 0; j < dsCalcWaitTime.Tables["Waitlist"].Rows.Count; j++)
+                {
+                    WStabletype = dsCalcWaitTime.Tables["Waitlist"].Rows[j]["WaitListTableType"].ToString();
+                    count = WStabletype.Split(TType).Length - 1;
+                    cntWaitlist += count;
+                }
+                for (int j = 0; j < dsCalcWaitTime.Tables["Seated"].Rows.Count; j++)
+                {
+                    WStabletype = dsCalcWaitTime.Tables["Seated"].Rows[j]["SeatedTableType"].ToString();
+                    count = WStabletype.Split(TType).Length - 1;
+                    if (count > 0)
+                    {
+                        cntSeated += count;
+                        for (int k = 0; k < count; k++)
+                        {
+                            strSeatedMin = strSeatedMin + dsCalcWaitTime.Tables["Seated"].Rows[j]["TimeRemaining"].ToString() + ",";
+                        }
+                    }
+                }
+
+                string[] SeatedMin = strSeatedMin.Split(',');
+                TotalAvailable = currAvailable - cntWaitlist;
+                dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["Available"] = TotalAvailable;
+                dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["GetTableNow"] = cntGetTableNow;
+                dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["SeatedList"] = strSeatedMin;
+
+
+                if (TotalAvailable > 0)
+                {
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"] = 0;
+                }
+                else
+                {
+                    int TotalTables = cntSeated + currAvailable;
+                    while ((cntWaitlist >= TotalTables) && (TotalTables > 0))
+                    {
+                        cntWaitlist -= TotalTables;
+                        AddWaitTime += DiningTime + 10;
+                    }
+                    RemDiningTime = 0;
+                    if (cntSeated > 0)
+                    {
+                        if ((cntSeated > cntWaitlist) && (cntWaitlist - currAvailable) >= 0)
+                        {
+                            RemDiningTime = Convert.ToInt16(SeatedMin[cntWaitlist - currAvailable]);
+                            RemDiningTime += 10;
+                            RemDiningTime = Convert.ToInt16(Math.Round(RemDiningTime / 5.0) * 5);
+                        }
+                        if ((cntSeated > cntWaitlist) && (cntWaitlist - currAvailable) >= 1)
+                        {
+                            try
+                            {
+                                nextDining = Convert.ToInt16(SeatedMin[cntWaitlist - currAvailable + 1]);
+                                nextDining += 10;
+                                nextDining = Convert.ToInt16(Math.Round(RemDiningTime / 5.0) * 5);
+                            }
+                            catch (Exception)
+                            {
+                            }
+                        }
+                    }
+                    WaitTime = RemDiningTime + AddWaitTime;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"] = WaitTime;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["NextWT"] = nextDining + AddWaitTime;
+
+                }
+                if (PartySize <= Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]) & (!sizefound))
+                {
+                    ReqTableType = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]);
+                    sizefound = true;
+                    CalculatedWaittime = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"]);
+                }
+                else
+                {
+                    //PartySize -= maxTableType;
+
+                }
+                strSeatedMin = "";
+                cntWaitlist = 0;
+                cntSeated = 0;
+                AddWaitTime = 0;
+            }
+
+
+            DataRow drnew = dt_GetWaitTIme.NewRow();
+            drnew["TableTypeUsed"] = ReqTableType;
+            drnew["CalculatedWaittime"] = CalculatedWaittime;
+
+            dt_GetWaitTIme.Rows.Add(drnew);
+
+                ds_ReturnWaitTime.Tables.Add(dt_GetWaitTIme);
+                ds_ReturnWaitTime.Tables.Add(dsCalcWaitTime.Tables["WaitTimeStatus"].Copy());
+
+                ds_ReturnWaitTime.Tables[0].TableName = "CalculatedWaittime";
+                ds_ReturnWaitTime.Tables[1].TableName = "WaitTime";
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+            return ds_ReturnWaitTime;
+        }
+
+        private DataSet GetRestaurantWaitTimeData(int RestaurantID)
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetWaitTime", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        SqlParameter tvpParam = cmd.Parameters.AddWithValue("@RestaurantID", RestaurantID);
+                        tvpParam.SqlDbType = SqlDbType.Int;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                        dsResponse.Tables[0].TableName = "DefineSection";
+                        dsResponse.Tables[1].TableName = "AvblByTable";
+                        dsResponse.Tables[2].TableName = "GetSeatedNow";
+                        dsResponse.Tables[3].TableName = "Waitlist";
+                        dsResponse.Tables[4].TableName = "Seated";
+                        dsResponse.Tables[5].TableName = "WaitTimeStatus";
+                        dsResponse.Tables[6].TableName = "DiningTime";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
+        public DataSet RestaurantWaittime()
+        {
+            int TotalAvailable, currAvailable, cntWaitlist = 0, cntSeated = 0, count = 0;
+            int AddWaitTime = 0, calTtype;
+            string WStabletype = "";
+            char TType;
+            string strSeatedMin = "";
+            int maxTableType, RestaurantID;
+            int RemDiningTime, DiningTime = 0, nextDining = 0, cntGetTableNow, WaitTime = 0;
+            DataSet ds_ReturnWaitTime = new DataSet();
+
+            DataSet dsCalcWaitTime = new DataSet();
+            try
+            {
+                dsCalcWaitTime = GetAllRestaurantWaitTimeData();
+                for (int a = 0; a <= dsCalcWaitTime.Tables["Restaurant"].Rows.Count - 1; a++)
+                {
+                    RestaurantID = Convert.ToInt16(dsCalcWaitTime.Tables["Restaurant"].Rows[a]["RestaurantID"]);
+                    DataView dvDining = new DataView(dsCalcWaitTime.Tables["DiningTime"]);
+                    dvDining.RowFilter = "RestaurantID = " + RestaurantID;
+
+                    if (dvDining.Count > 0)
+                    DiningTime = Convert.ToInt16(dvDining[0]["DiningTime"]);
+
+                //CheckNoWait
+                for (int i = 0; i <= dsCalcWaitTime.Tables["WaitTimeStatus"].Rows.Count - 1; i++)
+                {
+                    DataView dv = new DataView(dsCalcWaitTime.Tables["AvblByTable"]);
+                    DataView dvTableNow = new DataView(dsCalcWaitTime.Tables["GetSeatedNow"]);
+
+                    calTtype = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]);
+                    TType = Convert.ToChar(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"].ToString());
+
+                        dv.RowFilter = "RestaurantID = " + RestaurantID + " AND TableType = " + calTtype;
+                    dvTableNow.RowFilter = "RestaurantID = " + RestaurantID + " AND TableType = " + calTtype;
+                    maxTableType = calTtype;
+                    if (dvTableNow.Count > 0)
+                        cntGetTableNow = Convert.ToInt16(dvTableNow[0]["NumberOfTables"]);
+                    else
+                        cntGetTableNow = 0;
+
+                    if (dv.Count > 0)
+                        currAvailable = Convert.ToInt16(dv[0]["Available"]) - cntGetTableNow;
+                    else
+                        currAvailable = 0;
+                    for (int j = 0; j < dsCalcWaitTime.Tables["Waitlist"].Rows.Count; j++)
+                    {
+                            DataView dvWaitList = new DataView(dsCalcWaitTime.Tables["Waitlist"]);
+                            dvWaitList.RowFilter = "RestaurantID = " + RestaurantID;
+
+                            WStabletype = dvWaitList[j]["WaitListTableType"].ToString();
+                        count = WStabletype.Split(TType).Length - 1;
+                        cntWaitlist += count;
+                    }
+                    for (int j = 0; j < dsCalcWaitTime.Tables["Seated"].Rows.Count; j++)
+                    {
+                            DataView dvSeated = new DataView(dsCalcWaitTime.Tables["Seated"]);
+                            dvSeated.RowFilter = "RestaurantID = " + RestaurantID;
+
+                            WStabletype = dvSeated[j]["SeatedTableType"].ToString();
+                        count = WStabletype.Split(TType).Length - 1;
+                        if (count > 0)
+                        {
+                            cntSeated += count;
+                            for (int k = 0; k < count; k++)
+                            {
+                                strSeatedMin = strSeatedMin + dvSeated[j]["TimeRemaining"].ToString() + ",";
+                            }
+                        }
+                    }
+
+                    string[] SeatedMin = strSeatedMin.Split(',');
+                    TotalAvailable = currAvailable - cntWaitlist;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["RestaurantID"] = RestaurantID;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["Available"] = TotalAvailable;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["GetTableNow"] = cntGetTableNow;
+                    dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["SeatedList"] = strSeatedMin;
+
+
+                    if (TotalAvailable > 0)
+                    {
+                        dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"] = 0;
+                    }
+                    else
+                    {
+                        int TotalTables = cntSeated + currAvailable;
+                        while ((cntWaitlist >= TotalTables) && (TotalTables > 0))
+                        {
+                            cntWaitlist -= TotalTables;
+                            AddWaitTime += DiningTime + 10;
+                        }
+                        RemDiningTime = 0;
+                        if (cntSeated > 0)
+                        {
+                            if ((cntSeated > cntWaitlist) && (cntWaitlist - currAvailable) >= 0)
+                            {
+                                RemDiningTime = Convert.ToInt16(SeatedMin[cntWaitlist - currAvailable]);
+                                RemDiningTime += 10;
+                                RemDiningTime = Convert.ToInt16(Math.Round(RemDiningTime / 5.0) * 5);
+                            }
+                            if ((cntSeated > cntWaitlist) && (cntWaitlist - currAvailable) >= 1)
+                            {
+                                try
+                                {
+                                    nextDining = Convert.ToInt16(SeatedMin[cntWaitlist - currAvailable + 1]);
+                                    nextDining += 10;
+                                    nextDining = Convert.ToInt16(Math.Round(RemDiningTime / 5.0) * 5);
+                                }
+                                catch (Exception)
+                                {
+                                }
+                            }
+                        }
+                        WaitTime = RemDiningTime + AddWaitTime;
+                        dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"] = WaitTime;
+                        dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["NextWT"] = nextDining + AddWaitTime;
+
+                    }
+                    //if (PartySize <= Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]) & (!sizefound))
+                    //{
+                    //    ReqTableType = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TableType"]);
+                    //    sizefound = true;
+                    //    CalculatedWaittime = Convert.ToInt16(dsCalcWaitTime.Tables["WaitTimeStatus"].Rows[i]["TStatus"]);
+                    //}
+                    //else
+                    //{
+                    //    //PartySize -= maxTableType;
+
+                    //}
+                    strSeatedMin = "";
+                    cntWaitlist = 0;
+                    cntSeated = 0;
+                    AddWaitTime = 0;
+                }
+
+
+                ds_ReturnWaitTime.Tables.Add(dsCalcWaitTime.Tables["WaitTimeStatus"].Copy());
+
+                ds_ReturnWaitTime.Tables[0].TableName = "WaitTime";
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.WriteToErrorLogFile(ex);
+                throw ex;
+            }
+            return ds_ReturnWaitTime;
+        }
+
+        private DataSet GetAllRestaurantWaitTimeData()
+        {
+            DataSet dsResponse = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("spGetWaitTime", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dsResponse);
+                        }
+                        dsResponse.Tables[0].TableName = "DefineSection";
+                        dsResponse.Tables[1].TableName = "AvblByTable";
+                        dsResponse.Tables[2].TableName = "GetSeatedNow";
+                        dsResponse.Tables[3].TableName = "Waitlist";
+                        dsResponse.Tables[4].TableName = "Seated";
+                        dsResponse.Tables[5].TableName = "WaitTimeStatus";
+                        dsResponse.Tables[6].TableName = "DiningTime";
+                        dsResponse.Tables[7].TableName = "AllRestaurantWaitTime";
+                        dsResponse.Tables[8].TableName = "Restaurant";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return dsResponse;
+        }
+
         public DataSet GetRestaurantImageUrls(int RestaurantID)
         {
             DataSet dsImageUrls = new DataSet();

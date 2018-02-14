@@ -77,5 +77,10 @@ namespace Trufl.Business_Layer
         {
             return _adminDL.GetRestaurantImageUrls(RestaurantID);
         }
+
+        public DataSet CalculatedWaittime(int RestaurantID, int PartySize)
+        {
+            return _adminDL.CalculatedWaittime(RestaurantID, PartySize);
+        }
     }
 }
